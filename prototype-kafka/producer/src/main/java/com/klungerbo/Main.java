@@ -1,5 +1,7 @@
 package com.klungerbo;
 
+import java.io.IOException;
+
 public class Main {
     public static void main(String[] args) {
         System.out.println("Started Main with args:");
@@ -9,6 +11,10 @@ public class Main {
         }
 
         var producerServer = new StreamsProducer();
-        producerServer.start();
+        try {
+            producerServer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

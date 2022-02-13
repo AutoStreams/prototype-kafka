@@ -1,29 +1,28 @@
 package com.klungerbo;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 public class StreamsProducer {
-    public void start() {
+    public void start() throws IOException {
+        InputStream inputStream;
         final String topicName = "Testtopic";
 
         Properties props = new Properties();
+        final String propFileName = "config.properties";
 
-        props.put("bootstrap.servers", "localhost:9092");
+        inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
 
-        props.put("acks", "all");
-        props.put("retries", 0);
-        props.put("batch.size", 16384);
-        props.put("linger.ms", 1);
-        props.put("buffer.memory", 33554432);
-
-        props.put("key.serializer",
-                "org.apache.kafka.common.serialization.StringSerializer");
-
-        props.put("value.serializer",
-                "org.apache.kafka.common.serialization.StringSerializer");
+        if (inputStream != null) {
+            props.load(inputStream);
+        } else {
+            throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+        }
 
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
 
