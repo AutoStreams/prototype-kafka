@@ -1,11 +1,11 @@
-FROM openjdk:16-alpine3.13
+FROM openjdk:17-oracle
 
-WORKDIR /app
+COPY pom.xml /usr/local/service/pom.xml
+COPY src /usr/local/service/src
+COPY mvnw /usr/local/service/mvnw
+COPY .mvn /usr/local/service/.mvn
 
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN ./mvnw dependency:go-offline
+WORKDIR /usr/local/service
 
-COPY src ./src
-
-CMD ["./mvnw", "spring-boot:run"]
+RUN ./mvnw install
+CMD ["java", "-cp", "target/kafka-prototype-1.0-SNAPSHOT.jar", "Main"]
