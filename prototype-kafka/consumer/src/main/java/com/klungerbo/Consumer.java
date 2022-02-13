@@ -1,5 +1,6 @@
 package com.klungerbo;
 
+import com.klungerbo.utils.FileUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +8,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import com.klungerbo.utils.FileUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -29,7 +31,7 @@ public class Consumer {
    */
   private void createConsumer() {
     Properties props = new Properties();
-    loadConfigFromFile(props);
+    FileUtils.loadConfigFromFile(props, "config.properties");
     consumer =  new KafkaConsumer<String, String>(props);
     consumer.subscribe(topics);
   }
