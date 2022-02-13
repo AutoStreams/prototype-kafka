@@ -3,6 +3,7 @@ package com.klungerbo;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.Properties;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -23,6 +24,8 @@ public class StreamsProducer {
         } else {
             throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
         }
+
+        props.put("client.id", InetAddress.getLocalHost().getHostName());
 
         Producer<String, String> producer = new KafkaProducer<String, String>(props);
 

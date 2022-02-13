@@ -8,4 +8,4 @@ COPY .mvn /usr/local/service/.mvn
 WORKDIR /usr/local/service
 
 RUN ./mvnw package
-CMD ["java", "-cp", "target/kafka-prototype-1.0-SNAPSHOT-jar-with-dependencies.jar", "com.klungerbo.Main"]
+CMD ["java", "-jar", "target/kafka-prototype-1.0-SNAPSHOT-jar-with-dependencies.jar"]
