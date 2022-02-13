@@ -6,23 +6,20 @@ First acquire this project by cloning the repository. Cloning this repository ca
 git clone https://github.com/Klungerbo/streams-prototypes.git
 ```
 ### Option 1: Build and run with Maven
-#### Prerequisites
+**Prerequisites**
 * Download the latest version of [Maven](https://maven.apache.org/).
 * Download a Java JDK of version 17
 * Set the working directory to the root of the producer project i.e. **`streams-prototypes/prototype-kafka/producer/`**
-
-
 To build the project with its dependencies to a single jar file, execute the command:
 ```
 mvn package
 ```
-
 To run the application, execute the command:
 ```
 java -cp target/kafka-prototype-1.0-SNAPSHOT-jar-with-dependencies.jar com.klungerbo.Main
 ```
-
 ### Option 2: Build and run with Docker
+**Prerequisites**
 * Make sure you have downloaded [Docker](https://www.docker.com/) on your system.
 * Set the working directory to the root of the producer project i.e. **`streams-prototypes/prototype-kafka/producer/`**
 
