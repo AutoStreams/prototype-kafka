@@ -7,5 +7,5 @@ COPY .mvn /usr/local/service/.mvn
 
 WORKDIR /usr/local/service
 
-RUN ./mvnw install
-CMD ["java", "-cp", "target/kafka-prototype-1.0-SNAPSHOT.jar", "Main"]
+RUN ./mvnw package
+CMD ["java", "-cp", "target/kafka-prototype-1.0-SNAPSHOT-jar-with-dependencies.jar", "com.klungerbo.Main"]
