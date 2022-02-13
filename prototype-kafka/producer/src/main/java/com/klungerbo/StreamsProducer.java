@@ -11,7 +11,7 @@ public class StreamsProducer {
 
         Properties props = new Properties();
 
-        props.put("streams.server", "localhost:9092");
+        props.put("bootstrap.servers", "localhost:9092");
 
         props.put("acks", "all");
         props.put("retries", 0);
