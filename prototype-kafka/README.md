@@ -1,4 +1,4 @@
-# About The Project
+## About The Project
 This is a prototype of a Kafka Producer that can be instantiated as Docker containers.
 ## Getting Started
 First acquire this project by cloning the repository. Cloning this repository can be done by downloading [Git](https://git-scm.com/) then executing the command:
