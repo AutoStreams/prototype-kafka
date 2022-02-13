@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <mainClass>com.klungerbo.Main</mainClass>
+        <mainClass>com.klungerbo.streams.kafka.Main</mainClass>
     </properties>
 
     <dependencies>
@@ -53,7 +53,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.klungerbo.Main</mainClass>
+                            <mainClass>com.klungerbo.streams.kafka.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

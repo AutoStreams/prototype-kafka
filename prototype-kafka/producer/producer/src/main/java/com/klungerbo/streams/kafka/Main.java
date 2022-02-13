@@ -1,4 +1,4 @@
-package com.klungerbo;
+package com.klungerbo.streams.kafka;
 
 import java.io.IOException;
 
@@ -10,7 +10,7 @@ public class Main {
             System.out.println(arg);
         }
 
-        var producerServer = new StreamsProducer();
+        var producerServer = new Producer();
         try {
             producerServer.start();
         } catch (IOException e) {

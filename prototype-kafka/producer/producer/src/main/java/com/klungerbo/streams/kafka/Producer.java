@@ -1,15 +1,15 @@
-package com.klungerbo;
+package com.klungerbo.streams.kafka;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Properties;
-import org.apache.kafka.clients.producer.Producer;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-public class StreamsProducer {
+public class Producer {
     public void start() throws IOException {
         InputStream inputStream;
         final String topicName = "Testtopic";
@@ -27,7 +27,7 @@ public class StreamsProducer {
 
         props.put("client.id", InetAddress.getLocalHost().getHostName());
 
-        Producer<String, String> producer = new KafkaProducer<String, String>(props);
+        org.apache.kafka.clients.producer.Producer<String, String> producer = new KafkaProducer<String, String>(props);
 
         for(int i = 0; i < 10; i++) {
             producer.send(new ProducerRecord<String, String>(topicName,
