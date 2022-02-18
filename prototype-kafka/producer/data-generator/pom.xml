@@ -11,14 +11,19 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <mainClass>com.klungerbo.streams.kafka.Main</mainClass>
+        <mainClass>com.klungerbo.streams.kafka.client.Main</mainClass>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>[4.1.74.Final,)</version>
+            <version>4.1.74.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thedeanda</groupId>
+            <artifactId>lorem</artifactId>
+            <version>2.1</version>
         </dependency>
     </dependencies>
 
@@ -35,6 +40,11 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.klungerbo.streams.kafka.client.Main</mainClass>
+                        </manifest>
+                    </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
@@ -42,5 +52,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

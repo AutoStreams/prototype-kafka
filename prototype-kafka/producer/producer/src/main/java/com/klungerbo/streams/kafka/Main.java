@@ -1,6 +1,9 @@
 package com.klungerbo.streams.kafka;
 
-import java.io.IOException;
+import com.klungerbo.streams.kafka.server.DataGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,11 +13,21 @@ public class Main {
             System.out.println(arg);
         }
 
-        var producerServer = new Producer();
-        try {
-            producerServer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (int i = 0; i < 5; i++) {
+            new Thread(()-> {
+                try {
+                    var streamsProducer = new StreamsProducer();
+                    streamsProducer.initialize();
+
+                    var server = new DataGenerator(streamsProducer);
+
+                    server.run();
+                    streamsProducer.shutdown();
+                } catch (Exception e) {
+                    System.out.println("[ERROR] Streams producer failed:\n");
+                    e.printStackTrace();
+                }
+            }).start();
         }
     }
 }
