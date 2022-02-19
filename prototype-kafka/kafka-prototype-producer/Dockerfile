@@ -1,3 +1,6 @@
+# Code adapted from:
+# https://docs.docker.com/language/java/build-images/
+
 FROM openjdk:17-oracle
 
 COPY pom.xml /usr/local/service/pom.xml
