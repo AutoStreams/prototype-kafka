@@ -1,8 +1,12 @@
 version: "3.8"
 
 services:
-  kafka-producer-data-generator:
-    build: ./producer/data-generator
+  kafka-prototype-producer:
+    build: ./kafka-prototype-producer
+    ports:
+      - "8992:8992"
 
-  kafka-producer-producer:
-    build: ./producer/producer
+  data-producer:
+    build: ./data-producer
+    depends_on:
+      - "kafka-prototype-producer"

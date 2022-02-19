@@ -1,8 +1,0 @@
-version: "3.8"
-
-services:
-  kafka-producer-data-generator:
-    build: ./data-generator
-
-  kafka-producer-producer:
-    build: ./producer
