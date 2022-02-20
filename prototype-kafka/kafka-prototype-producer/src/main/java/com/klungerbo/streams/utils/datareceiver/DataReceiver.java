@@ -11,10 +11,24 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import org.jetbrains.annotations.NotNull;
 
-public record DataReceiver(KafkaPrototypeProducer kafkaPrototypeProducer) {
+/**
+ * Data receiver (server) that listens for messages from data producers (clients).
+ * Messages are delegated to a Kafka prototype producer.
+ *
+ * @param kafkaPrototypeProducer the KafkaPrototypeProducer to inject.
+ * @version 1.0
+ * @since 1.0
+ */
+public record DataReceiver(@NotNull KafkaPrototypeProducer kafkaPrototypeProducer) {
     static final int PORT = Integer.parseInt(System.getProperty("port", "8992"));
 
+    /**
+     * Execute the data receiver to start listening for messages.
+     *
+     * @throws InterruptedException if the thread is interrupted.
+     */
     public void run() throws InterruptedException {
         EventLoopGroup masterGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();

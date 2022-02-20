@@ -14,6 +14,12 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+/**
+ * Data producer (client) that connects to a producer (server) in order to send messages.
+ *
+ * @version 1.0
+ * @since 1.0
+ */
 public final class DataProducer {
     private final Lorem lorem = LoremIpsum.getInstance();
     //private final String HOST = System.getProperty("host", "127.0.0.1");
@@ -25,6 +31,9 @@ public final class DataProducer {
     private Channel channel;
     private boolean running = true;
 
+    /**
+     * Shutdown the DataProducer.
+     */
     public void shutdown() {
         this.running = false;
         this.group.shutdownGracefully();
@@ -32,6 +41,11 @@ public final class DataProducer {
         System.out.println("Client Shutdown");
     }
 
+    /**
+     * Initialize the DataProducer.
+     *
+     * @throws InterruptedException if the thread is interrupted.
+     */
     public void initialize() throws InterruptedException {
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
@@ -40,15 +54,25 @@ public final class DataProducer {
         this.channel = bootstrap.connect(HOST, PORT).sync().channel();
     }
 
-    private String getRandomString() {
-        return lorem.getWords(7, 12);
+    /**
+     * Generate a random lorem ipsum string.
+     *
+     * @param min the minimum amount of words in the random string.
+     * @param max the maximum amount of words in the random string.
+     * @return a random lorem ipsum string of min <= n <= max amount of n words.
+     */
+    private String getRandomString(int min, int max) {
+        return lorem.getWords(min, max);
     }
 
+    /**
+     * Execute the DataProducer.
+     */
     public void run() {
         ChannelFuture lastWriteFuture = null;
 
         while (this.running) {
-            var line = getRandomString();
+            var line = getRandomString(7, 12);
             System.out.println("String created: " + line);
             lastWriteFuture = channel.writeAndFlush(line + "\r\n");
 
