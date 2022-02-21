@@ -1,0 +1,29 @@
+package com.klungerbo.streams.kafka.utils;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+/**
+ * Utility class, providing utility methods related to loading from files.
+ *
+ * @version 1.0
+ * @since 1.0
+ */
+public final class FileUtils {
+  /**
+   * Loads configs from the specified config file into a properties object.
+   *
+   * @param configName name of the file toa load from
+   * @return Properties object containing the loaded properties (if any)
+   */
+  public static Properties loadConfigFromFile(String configName) throws IOException {
+    Properties props = new Properties();
+
+    InputStream is = ClassLoader.getSystemResourceAsStream(configName);
+    props.load(is);
+
+    return props;
+  }
+}
