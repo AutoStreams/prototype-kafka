@@ -25,7 +25,7 @@ java -jar kafka-prototype-producer-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 To build the docker image, execute the command:
 ```
-docker build -t kafka-prototype-producer
+docker build -t kafka-prototype-producer .
 ```
 
 To execute the built image, execute the command:
