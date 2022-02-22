@@ -12,58 +12,56 @@ import java.util.Properties;
  * @since 1.0
  */
 public class ConsumerMaster {
-  private static final String CONFIG_NAME = "mainconfig.properties";
-  private final ArrayList<ConsumerWorker> workers;
+    private static final String CONFIG_NAME = "masterconfig.properties";
+    private final ArrayList<ConsumerWorker> workers;
 
-  /**
-   * Constructor for ConsumerMaster.
-   *
-   * @param consumerCount amount of workers to create
-   */
-  public ConsumerMaster(int consumerCount) {
-    workers = new ArrayList<>();
-    generateWorkers(consumerCount);
-  }
-
-  /**
-   * Generates workers belonging to the master.
-   *
-   * @param consumerCount amount of workers to create
-   */
-  private void generateWorkers(int consumerCount) {
-    if (consumerCount == 0) {
-      try {
-        Properties props = FileUtils.loadConfigFromFile(CONFIG_NAME);
-        consumerCount = Integer.parseInt(props.getProperty("consumers.count"));
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+    /**
+     * Constructor for ConsumerMaster.
+     *
+     * @param consumerCount amount of workers to create
+     */
+    public ConsumerMaster(int consumerCount) {
+        workers = new ArrayList<>();
+        generateWorkers(consumerCount);
     }
 
-    for (int i = 0; i < consumerCount; i++) {
-      new Thread(() -> {
-        ConsumerWorker consumerWorker = new ConsumerWorker();
-        workers.add(consumerWorker);
-        consumerWorker.start();
-      }).start();
-    }
-  }
+    /**
+     * Generates workers belonging to the master.
+     *
+     * @param consumerCount amount of workers to create
+     */
+    private void generateWorkers(int consumerCount) {
+        if (consumerCount == 0) {
+            try {
+                Properties props = FileUtils.loadConfigFromFile(CONFIG_NAME);
+                consumerCount = Integer.parseInt(props.getProperty("consumers.count"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
-  /**
-   * Starts the workers of the master.
-   */
-  public void startWorkers() {
-    for (ConsumerWorker worker : workers) {
-      worker.start();
+        for (int i = 0; i < consumerCount; i++) {
+            ConsumerWorker cw = new ConsumerWorker();
+            workers.add(cw);
+        }
     }
-  }
 
-  /**
-   * Stops the workers of the master.
-   */
-  public void stopWorkers() {
-    for (ConsumerWorker worker : workers) {
-      worker.stop();
+    /**
+     * Starts the workers of the master.
+     */
+    public void startWorkers() {
+        for (ConsumerWorker worker : workers) {
+            worker.initialize();
+            worker.start();
+        }
     }
-  }
+
+    /**
+     * Stops the workers of the master.
+     */
+    public void stopWorkers() {
+        for (ConsumerWorker worker : workers) {
+            worker.stop();
+        }
+    }
 }

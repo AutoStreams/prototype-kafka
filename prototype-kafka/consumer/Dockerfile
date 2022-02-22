@@ -1,11 +1,11 @@
-FROM openjdk:17-oracle
+# Code adapted from:
+# https://stackoverflow.com/questions/27767264/how-to-dockerize-maven-project-and-how-many-ways-to-accomplish-it
 
-COPY pom.xml /usr/local/service/pom.xml
-COPY src /usr/local/service/src
-COPY mvnw /usr/local/service/mvnw
-COPY .mvn /usr/local/service/.mvn
+FROM maven:3.8.4-openjdk-17-slim AS build
+COPY src /home/app/src
+COPY pom.xml /home/app
+RUN mvn -f /home/app/pom.xml clean package
 
-WORKDIR /usr/local/service
-
-RUN ./mvnw package
-CMD ["java", "-cp", "target/kafka-prototype-1.0-SNAPSHOT-jar-with-dependencies.jar", "Main"]
+FROM gcr.io/distroless/java17-debian11
+COPY --from=build /home/app/target/kafka-consumer-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/local/lib/data-consumer.jar
+ENTRYPOINT ["java", "-jar", "/usr/local/lib/data-consumer.jar"]
