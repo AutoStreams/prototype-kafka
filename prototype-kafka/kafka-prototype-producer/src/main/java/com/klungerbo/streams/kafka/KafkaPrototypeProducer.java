@@ -54,7 +54,7 @@ public class KafkaPrototypeProducer {
      *                     or if there was a problem in resolving the local hostname.
      */
     public void initialize() throws IOException {
-        var props = loadPropsFromConfig();
+        Properties props = loadPropsFromConfig();
         props.put("client.id", InetAddress.getLocalHost().getHostName());
 
         this.kafkaProducer = new KafkaProducer<>(props);
@@ -73,7 +73,7 @@ public class KafkaPrototypeProducer {
      * @param message the message to send to the Kafka broker.
      */
     public void sendRecord(@NotNull String message) {
-        var producerRecord = new ProducerRecord<String, String>(TOPIC_NAME, message);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, message);
         kafkaProducer.send(producerRecord);
     }
 }
