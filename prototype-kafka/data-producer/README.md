@@ -25,7 +25,7 @@ java -jar data-producer-1.0-SNAPSHOT-jar-with-dependencies.jar
 
 To build the docker image, execute the command:
 ```
-docker build -t data-producer 
+docker build -t data-producer .
 ```
 
 To execute the built image, execute the command:
