@@ -73,7 +73,7 @@ public final class DataProducer {
 
         while (this.running) {
             String line = getRandomString(7, 12);
-            System.out.println("String created: " + line);
+            //System.out.println("String created: " + line);
             lastWriteFuture = channel.writeAndFlush(line + "\r\n");
 
             if ("disconnect".equalsIgnoreCase(line)) {
