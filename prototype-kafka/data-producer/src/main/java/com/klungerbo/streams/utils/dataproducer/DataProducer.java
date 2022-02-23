@@ -72,7 +72,7 @@ public final class DataProducer {
         ChannelFuture lastWriteFuture = null;
 
         while (this.running) {
-            var line = getRandomString(7, 12);
+            String line = getRandomString(7, 12);
             System.out.println("String created: " + line);
             lastWriteFuture = channel.writeAndFlush(line + "\r\n");
 

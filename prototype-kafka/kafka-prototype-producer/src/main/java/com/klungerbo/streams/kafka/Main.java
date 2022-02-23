@@ -16,10 +16,10 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
-            var kafkaPrototypeProducer = new KafkaPrototypeProducer();
+            KafkaPrototypeProducer kafkaPrototypeProducer = new KafkaPrototypeProducer();
             kafkaPrototypeProducer.initialize();
 
-            var dataReceiver = new DataReceiver(kafkaPrototypeProducer);
+            DataReceiver dataReceiver = new DataReceiver(kafkaPrototypeProducer);
 
             dataReceiver.run();
             kafkaPrototypeProducer.shutdown();
