@@ -13,16 +13,15 @@ import java.util.Properties;
  */
 public class ConsumerMaster {
     private static final String CONFIG_NAME = "masterconfig.properties";
-    private final ArrayList<ConsumerWorker> workers;
+    private final ArrayList<ConsumerWorker> workers = new ArrayList<>();
 
     /**
-     * Constructor for ConsumerMaster.
+     * Initializes the Consumer Master, starts generation of workers.
      *
-     * @param consumerCount amount of workers to create
+     * @param consumerCount amount of consumers to generate
      */
-    public ConsumerMaster(int consumerCount) {
-        workers = new ArrayList<>();
-        generateWorkers(consumerCount);
+    public void init(int consumerCount) {
+        this.generateWorkers(consumerCount);
     }
 
     /**

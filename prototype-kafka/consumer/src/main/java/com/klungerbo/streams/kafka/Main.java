@@ -37,7 +37,8 @@ public class Main {
             ne.printStackTrace();
         }
 
-        consumerMaster = new ConsumerMaster(consumerCount);
+        consumerMaster = new ConsumerMaster();
+        consumerMaster.init(consumerCount);
         consumerMaster.startWorkers();
     }
 }

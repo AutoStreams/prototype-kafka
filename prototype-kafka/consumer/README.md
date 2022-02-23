@@ -31,7 +31,7 @@ java -jar kafka-consumer-1.0-SNAPSHOT-jar-with-dependencies.jar -w 12
 
 To build the docker image, execute the command:
 ```
-docker build -t consumer 
+docker build -t consumer .
 ```
 
 To execute the built image, execute the command:
