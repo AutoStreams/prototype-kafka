@@ -3,21 +3,27 @@ version: "3.8"
 services:
   kafka-prototype-producer:
     build: ./kafka-prototype-producer
+    environment:
+      KAFKA_URL: kafka:9092
     depends_on:
-      - "kafka"
+      - "init-kafka"
     ports:
       - "8992:8992"
 
   data-producer:
     build: ./data-producer
-      #network_mode: host
+    environment:
+      PRODUCER_URL: kafka-prototype-producer
+      PRODUCER-PORT: 8992
     depends_on:
       - "kafka-prototype-producer"
 
   kafka-prototype-consumer:
     build: ./consumer
+    environment:
+      KAFKA_URL: kafka:9092
     depends_on:
-      - "kafka"
+      - "init-kafka"
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -32,7 +38,7 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - 29092:29092
+      - 9092:9092
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181

@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class KafkaPrototypeProducer {
     private static final String CONFIG_PROPERTIES = "config.properties";
+    private static final String KAFKA_URL = System.getenv().getOrDefault("KAFKA_URL", "127.0.0.1");
     private static final String TOPIC_NAME = "Testtopic";
     Producer<String, String> kafkaProducer;
 
@@ -55,6 +56,7 @@ public class KafkaPrototypeProducer {
      */
     public void initialize() throws IOException {
         Properties props = loadPropsFromConfig();
+        props.put("bootstrap.servers", KAFKA_URL);
         props.put("client.id", InetAddress.getLocalHost().getHostName());
 
         this.kafkaProducer = new KafkaProducer<>(props);

@@ -21,12 +21,16 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  * @since 1.0
  */
 public final class DataProducer {
-    private final Lorem lorem = LoremIpsum.getInstance();
-    //private final String HOST = System.getProperty("host", "127.0.0.1");
-    private final String HOST = System.getProperty("host", "kafka-prototype-producer");
-    private final int PORT = Integer.parseInt(System.getProperty("port", "8992"));
+    private static final String PRODUCER_URL = System.getenv().getOrDefault("PRODUCER_URL", "127.0.0.1");
+    private static final int PRODUCER_PORT = Integer
+        .parseInt(System
+            .getenv()
+            .getOrDefault("PRODUCER_PORT", "8992")
+        );
     private final EventLoopGroup group = new NioEventLoopGroup();
     private final Bootstrap bootstrap = new Bootstrap();
+
+    private final Lorem lorem = LoremIpsum.getInstance();
 
     private Channel channel;
     private boolean running = true;
@@ -51,7 +55,7 @@ public final class DataProducer {
                 .channel(NioSocketChannel.class)
                 .handler(new DataProducerInitializer());
 
-        this.channel = bootstrap.connect(HOST, PORT).sync().channel();
+        this.channel = bootstrap.connect(PRODUCER_URL, PRODUCER_PORT).sync().channel();
     }
 
     /**
