@@ -5,25 +5,41 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.klungerbo</groupId>
-    <artifactId>data-producer</artifactId>
+    <artifactId>kafka-producer</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <mainClass>com.klungerbo.streams.utils.dataproducer.Main</mainClass>
+        <mainClass>com.klungerbo.streams.kafka.Main</mainClass>
     </properties>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <!-- Start dependencies used by Kafka-clients logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.36</version>
+        </dependency>
+        <!-- End dependencies used by Kafka-clients logging -->
+
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>4.1.74.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>com.thedeanda</groupId>
-            <artifactId>lorem</artifactId>
-            <version>2.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
         <dependency>
@@ -48,7 +64,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.klungerbo.streams.utils.dataproducer.Main</mainClass>
+                            <mainClass>com.klungerbo.streams.kafka.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -58,4 +74,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

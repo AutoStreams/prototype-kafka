@@ -7,5 +7,5 @@ COPY pom.xml /home/app
 RUN mvn -f /home/app/pom.xml clean package
 
 FROM gcr.io/distroless/java17-debian11
-COPY --from=build /home/app/target/kafka-prototype-producer-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/local/lib/kafka-prototype-producer.jar
-ENTRYPOINT ["java", "-jar", "/usr/local/lib/kafka-prototype-producer.jar"]
+COPY --from=build /home/app/target/data-provider-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/local/lib/data-producer.jar
+ENTRYPOINT ["java", "-jar", "/usr/local/lib/data-producer.jar"]

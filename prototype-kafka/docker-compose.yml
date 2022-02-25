@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  kafka-prototype-producer:
-    build: ./kafka-prototype-producer
+  producer:
+    build: ./producer
     environment:
       KAFKA_URL: kafka:9092
     depends_on:
@@ -10,15 +10,15 @@ services:
     ports:
       - 8992:8992
 
-  data-producer:
-    build: ./data-producer
+  data-provider:
+    build: ./data-provider
     environment:
-      PRODUCER_URL: kafka-prototype-producer
+      PRODUCER_URL: producer
       PRODUCER_PORT: 8992
     depends_on:
-      - kafka-prototype-producer
+      - producer
 
-  kafka-prototype-consumer:
+  consumer:
     build: ./consumer
     environment:
       KAFKA_URL: kafka:9092
