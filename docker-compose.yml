@@ -15,7 +15,7 @@ services:
       - 8992:8992
 
   data-provider:
-    build: ./data-provider
+    build: ./streams-data-provider
     environment:
       PRODUCER_URL: producer
       PRODUCER_PORT: 8992
