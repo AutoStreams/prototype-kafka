@@ -6,9 +6,9 @@ services:
     environment:
       KAFKA_URL: kafka:9092
     depends_on:
-      - "init-kafka"
+      - init-kafka
     ports:
-      - "8992:8992"
+      - 8992:8992
 
   data-producer:
     build: ./data-producer
@@ -16,20 +16,22 @@ services:
       PRODUCER_URL: kafka-prototype-producer
       PRODUCER_PORT: 8992
     depends_on:
-      - "kafka-prototype-producer"
+      - kafka-prototype-producer
 
   kafka-prototype-consumer:
     build: ./consumer
     environment:
       KAFKA_URL: kafka:9092
     depends_on:
-      - "init-kafka"
+      - init-kafka
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: bitnami/zookeeper:latest
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+      #TODO: Manage authentication
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_TICK_TIME=2000
+      - ZOO_PORT_NUMBER=2181
     ports:
       - 22181:2181
   
