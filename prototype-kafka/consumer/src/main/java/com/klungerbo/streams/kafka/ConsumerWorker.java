@@ -21,7 +21,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
  * @since 1.0
  */
 public class ConsumerWorker implements Runnable {
-    private static final String KAFKA_URL = System.getenv().getOrDefault("KAFKA_URL", "127.0.0.1");
     private final List<String> topics = List.of("Testtopic");
     private KafkaConsumer<String, String> consumer = null;
     private boolean running = true;
@@ -30,8 +29,12 @@ public class ConsumerWorker implements Runnable {
      * Initializes the consumer, and subscribes it to its topics.
      */
     public void initialize() {
-        createConsumer();
-        consumer.subscribe(topics);
+        try {
+            createConsumer();
+            consumer.subscribe(topics);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -54,15 +57,18 @@ public class ConsumerWorker implements Runnable {
     /**
      * Creates the relevant kafka consumer and subscribes it to specified topics.
      */
-    private void createConsumer() {
-        try {
-            Properties props = FileUtils.loadConfigFromFile("consumerconfig.properties");
-            props.put("bootstrap.servers", KAFKA_URL);
-            System.out.println(props.get("bootstrap.servers"));
-            consumer = new KafkaConsumer<String, String>(props);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void createConsumer() throws IOException {
+        Properties props = FileUtils.loadConfigFromFile("consumerconfig.properties");
+
+        String host = System.getenv().getOrDefault("KAFKA_URL",
+            props.getProperty("kafka.url", "127.0.0.1")
+        );
+
+        props.put("bootstrap.servers", host);
+        System.out.println(props.getProperty("bootstrap.servers"));
+        System.out.println();
+        System.out.println();
+        consumer = new KafkaConsumer<String, String>(props);
     }
 
     /**

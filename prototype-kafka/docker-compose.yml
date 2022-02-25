@@ -14,7 +14,7 @@ services:
     build: ./data-producer
     environment:
       PRODUCER_URL: kafka-prototype-producer
-      PRODUCER-PORT: 8992
+      PRODUCER_PORT: 8992
     depends_on:
       - "kafka-prototype-producer"
 

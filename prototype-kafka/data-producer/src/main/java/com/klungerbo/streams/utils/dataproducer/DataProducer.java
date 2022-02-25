@@ -13,6 +13,12 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Data producer (client) that connects to a producer (server) in order to send messages.
@@ -21,14 +27,9 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  * @since 1.0
  */
 public final class DataProducer {
-    private static final String PRODUCER_URL = System.getenv().getOrDefault("PRODUCER_URL", "127.0.0.1");
-    private static final int PRODUCER_PORT = Integer
-        .parseInt(System
-            .getenv()
-            .getOrDefault("PRODUCER_PORT", "8992")
-        );
     private final EventLoopGroup group = new NioEventLoopGroup();
     private final Bootstrap bootstrap = new Bootstrap();
+    private static final String CONFIG_PROPERTIES = "config.properties";
 
     private final Lorem lorem = LoremIpsum.getInstance();
 
@@ -50,12 +51,24 @@ public final class DataProducer {
      *
      * @throws InterruptedException if the thread is interrupted.
      */
-    public void initialize() throws InterruptedException {
+    public void initialize() throws InterruptedException, IOException {
+        Properties props = loadPropsFromConfig();
+
+        String host = System.getenv().getOrDefault("PRODUCER_URL",
+            props.getProperty("producer.url", "127.0.0.1")
+        );
+
+        int port = Integer.parseInt(System.getenv().getOrDefault("PRODUCER_PORT",
+            props.getProperty("producer.port", "8992"))
+        );
+        System.out.println(host + port);
+        System.out.println();
+        System.out.println();
+        System.out.println();
         bootstrap.group(group)
                 .channel(NioSocketChannel.class)
                 .handler(new DataProducerInitializer());
-
-        this.channel = bootstrap.connect(PRODUCER_URL, PRODUCER_PORT).sync().channel();
+        this.channel = bootstrap.connect(host, port).sync().channel();
     }
 
     /**
@@ -72,12 +85,17 @@ public final class DataProducer {
     /**
      * Execute the DataProducer.
      */
-    public void run() {
+    public void run(){
         ChannelFuture lastWriteFuture = null;
 
         while (this.running) {
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             String line = getRandomString(7, 12);
-            //System.out.println("String created: " + line);
+            System.out.println("String created: " + line);
             lastWriteFuture = channel.writeAndFlush(line + "\r\n");
 
             if ("disconnect".equalsIgnoreCase(line)) {
@@ -100,5 +118,26 @@ public final class DataProducer {
         }
 
         this.group.shutdownGracefully();
+    }
+
+    /**
+     * Load Kafka producer properties from configuration file.
+     *
+     * @return the properties loaded from the configuration file.
+     * @throws IOException if there was a problem loading or processing the configuration file.
+     */
+    private Properties loadPropsFromConfig() throws IOException {
+        Properties props = new Properties();
+        InputStream inputStream;
+
+        inputStream = getClass().getClassLoader().getResourceAsStream(CONFIG_PROPERTIES);
+
+        if (inputStream != null) {
+            props.load(inputStream);
+        } else {
+            throw new FileNotFoundException("Could not open " + CONFIG_PROPERTIES);
+        }
+
+        return props;
     }
 }

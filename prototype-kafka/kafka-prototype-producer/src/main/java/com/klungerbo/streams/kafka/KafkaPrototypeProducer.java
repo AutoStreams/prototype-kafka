@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class KafkaPrototypeProducer {
     private static final String CONFIG_PROPERTIES = "config.properties";
-    private static final String KAFKA_URL = System.getenv().getOrDefault("KAFKA_URL", "127.0.0.1");
     private static final String TOPIC_NAME = "Testtopic";
     Producer<String, String> kafkaProducer;
 
@@ -37,12 +36,12 @@ public class KafkaPrototypeProducer {
         Properties props = new Properties();
         InputStream inputStream;
 
-        inputStream = getClass().getClassLoader().getResourceAsStream(KafkaPrototypeProducer.CONFIG_PROPERTIES);
+        inputStream = getClass().getClassLoader().getResourceAsStream(CONFIG_PROPERTIES);
 
         if (inputStream != null) {
             props.load(inputStream);
         } else {
-            throw new FileNotFoundException("Could not open " + KafkaPrototypeProducer.CONFIG_PROPERTIES);
+            throw new FileNotFoundException("Could not open " + CONFIG_PROPERTIES);
         }
 
         return props;
@@ -56,9 +55,19 @@ public class KafkaPrototypeProducer {
      */
     public void initialize() throws IOException {
         Properties props = loadPropsFromConfig();
-        props.put("bootstrap.servers", KAFKA_URL);
-        props.put("client.id", InetAddress.getLocalHost().getHostName());
 
+        String host = System.getenv().getOrDefault("KAFKA_URL",
+            props.getProperty("kafka.url", "127.0.0.1")
+        );
+
+        props.put("bootstrap.servers", host);
+        props.put("client.id", InetAddress.getLocalHost().getHostName());
+        System.out.println(props.getProperty("bootstrap.servers"));
+        System.out.println();
+        System.out.println();
+        System.out.println(props.getProperty("client.id"));
+        System.out.println();
+        System.out.println();
         this.kafkaProducer = new KafkaProducer<>(props);
     }
 
