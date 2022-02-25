@@ -79,6 +79,7 @@ services:
       KAFKA_CFG_LISTENERS: CLIENT://:29092,EXTERNAL://:29093
       KAFKA_CFG_ADVERTISED_LISTENERS: CLIENT://broker-2:29092,EXTERNAL://localhost:29093
       KAFKA_CFG_INTER_BROKER_LISTENER_NAME: CLIENT
+      
 
   init-kafka:
     image: bitnami/kafka:latest
