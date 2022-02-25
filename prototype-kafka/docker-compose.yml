@@ -53,7 +53,7 @@ services:
       KAFKA_CFG_INTER_BROKER_LISTENER_NAME: CLIENT
 
   init-kafka:
-    image: docker.io/bitnami/kafka:3
+    image: bitnami/kafka:latest
     depends_on:
       - kafka
     entrypoint: [ '/bin/sh', '-c' ]
