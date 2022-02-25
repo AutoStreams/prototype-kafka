@@ -5,6 +5,11 @@ First acquire this project by cloning the repository. Cloning this repository ca
 ```
 git clone https://github.com/Klungerbo/streams-prototypes.git
 ```
+After the repository has been clones, change the working directory to the project root by executing the command: 
+```cd streams-prototype-kafka```
+The next step is to aquire the data-provider submodule by executing the command:
+```git submodule update --init --recursive```
+
 ### Build and run docker-compose 
 **Prerequisites**
 * Make sure you have downloaded [Docker](https://www.docker.com/) on your system.
