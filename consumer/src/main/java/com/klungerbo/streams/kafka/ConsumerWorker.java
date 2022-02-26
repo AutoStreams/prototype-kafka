@@ -28,6 +28,8 @@ public class ConsumerWorker implements Runnable {
     private KafkaConsumer<String, String> consumer = null;
     private boolean running = true;
 
+    private final Logger logger = LoggerFactory.getLogger(ConsumerWorker.class);
+
     /**
      * Initializes the consumer, and subscribes it to its topics.
      */
@@ -54,7 +56,7 @@ public class ConsumerWorker implements Runnable {
     public void stop() {
         this.running = false;
         this.consumer.close();
-        System.out.println("Shutting down consumer");
+        logger.info("Shutting down consumer");
     }
 
     /**
@@ -68,10 +70,7 @@ public class ConsumerWorker implements Runnable {
         );
 
         props.put("bootstrap.servers", host);
-        System.out.println(props.getProperty("bootstrap.servers"));
-        System.out.println();
-        System.out.println();
-        consumer = new KafkaConsumer<String, String>(props);
+        consumer = new KafkaConsumer<>(props);
     }
 
     /**
@@ -81,17 +80,17 @@ public class ConsumerWorker implements Runnable {
     public void run() {
         while (this.running) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-            for (ConsumerRecord<String, String> record : records) {
-                System.out.println("Key: " + record.key() + ", Value: " + record.value());
-                System.out.println("Partition: " + record.partition() + ", Offset: " + record.offset());
+            for (ConsumerRecord<String, String> consumerRecord : records) {
+                logger.info("Key: " + consumerRecord.key() + ", Value: " + consumerRecord.value());
+                logger.info("Partition: " + consumerRecord.partition() + ", Offset: " + consumerRecord.offset());
             }
 
             try {
                 consumer.commitAsync();
             } catch (CommitFailedException e) {
-                System.out.println("Consumer failed to commit");
+               logger.info("Consumer failed to commit");
             }
         }
-        System.out.println("Consumer shut down");
+        logger.info("Consumer shut down");
     }
 }
