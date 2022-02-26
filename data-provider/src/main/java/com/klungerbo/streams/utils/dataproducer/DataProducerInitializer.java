@@ -20,6 +20,12 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.0
  */
 public class DataProducerInitializer extends ChannelInitializer<SocketChannel> {
+    DataProducer dataProducer;
+
+    DataProducerInitializer(DataProducer dataProducer) {
+        this.dataProducer = dataProducer;
+    }
+
     /**
      * Initialize a channel's pipeline.
      *
@@ -32,6 +38,6 @@ public class DataProducerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
         pipeline.addLast(new StringDecoder());
         pipeline.addLast(new StringEncoder());
-        pipeline.addLast(new DataProducerHandler());
+        pipeline.addLast(new DataProducerHandler(this.dataProducer));
     }
 }

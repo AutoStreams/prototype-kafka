@@ -16,6 +16,12 @@ import org.jetbrains.annotations.Nullable;
  * @since 1.0
  */
 public class DataProducerHandler extends SimpleChannelInboundHandler<String> {
+    DataProducer dataProducer;
+
+    DataProducerHandler(DataProducer dataProducer) {
+        this.dataProducer = dataProducer;
+    }
+
     /**
      * Read message received from a server.
      *
@@ -24,7 +30,11 @@ public class DataProducerHandler extends SimpleChannelInboundHandler<String> {
      */
     @Override
     public void channelRead0(@Nullable ChannelHandlerContext context, @NotNull String message) {
-        System.err.println(message);
+        System.out.println("[channelRead0] Received: " + message);
+
+        if ("server-shutdown".equalsIgnoreCase(message)) {
+            this.dataProducer.shutdown();
+        }
     }
 
     /**

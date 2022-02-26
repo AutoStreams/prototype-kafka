@@ -4,16 +4,16 @@
  */
 package com.klungerbo.streams.kafka;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Properties;
-
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * A prototype of a Kafka producer.
@@ -57,17 +57,15 @@ public class KafkaPrototypeProducer {
         Properties props = loadPropsFromConfig();
 
         String host = System.getenv().getOrDefault("KAFKA_URL",
-            props.getProperty("kafka.url", "127.0.0.1")
+                props.getProperty("kafka.url", "127.0.0.1")
         );
 
         props.put("bootstrap.servers", host);
         props.put("client.id", InetAddress.getLocalHost().getHostName());
+
         System.out.println(props.getProperty("bootstrap.servers"));
-        System.out.println();
-        System.out.println();
         System.out.println(props.getProperty("client.id"));
-        System.out.println();
-        System.out.println();
+
         this.kafkaProducer = new KafkaProducer<>(props);
     }
 

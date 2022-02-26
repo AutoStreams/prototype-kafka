@@ -22,14 +22,16 @@ import org.jetbrains.annotations.NotNull;
  */
 public class DataReceiverInitializer extends ChannelInitializer<SocketChannel> {
     private final KafkaPrototypeProducer kafkaPrototypeProducer;
+    private final DataReceiver dataReceiver;
 
     /**
      * Create a DataReceiverInitializer instance with injected KafkaPrototypeProducer.
      *
      * @param kafkaPrototypeProducer the KafkaPrototypeProducer to inject.
      */
-    public DataReceiverInitializer(@NotNull KafkaPrototypeProducer kafkaPrototypeProducer) {
+    public DataReceiverInitializer(@NotNull KafkaPrototypeProducer kafkaPrototypeProducer, @NotNull DataReceiver dataReceiver) {
         this.kafkaPrototypeProducer = kafkaPrototypeProducer;
+        this.dataReceiver = dataReceiver;
     }
 
     /**
@@ -44,6 +46,6 @@ public class DataReceiverInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
         pipeline.addLast(new StringDecoder());
         pipeline.addLast(new StringEncoder());
-        pipeline.addLast(new DataReceiverHandler(kafkaPrototypeProducer));
+        pipeline.addLast(new DataReceiverHandler(this.dataReceiver, kafkaPrototypeProducer));
     }
 }
