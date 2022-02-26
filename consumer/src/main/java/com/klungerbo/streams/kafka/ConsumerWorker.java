@@ -1,6 +1,7 @@
 /**
  * Code adapted from:
  * https://www.javatpoint.com/creating-kafka-consumer-in-java
+ * https://www.oreilly.com/library/view/kafka-the-definitive/9781491936153/ch04.html
  */
 
 package com.klungerbo.streams.kafka;
@@ -10,6 +11,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
+
+import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -46,11 +49,11 @@ public class ConsumerWorker implements Runnable {
     }
 
     /**
-     * Stops the consumer.
+     * Gracefully stops the consumer.
      */
     public void stop() {
-        this.consumer.unsubscribe();
         this.running = false;
+        this.consumer.close();
         System.out.println("Shutting down consumer");
     }
 
@@ -81,6 +84,12 @@ public class ConsumerWorker implements Runnable {
             for (ConsumerRecord<String, String> record : records) {
                 System.out.println("Key: " + record.key() + ", Value: " + record.value());
                 System.out.println("Partition: " + record.partition() + ", Offset: " + record.offset());
+            }
+
+            try {
+                consumer.commitAsync();
+            } catch (CommitFailedException e) {
+                System.out.println("Consumer failed to commit");
             }
         }
         System.out.println("Consumer shut down");
