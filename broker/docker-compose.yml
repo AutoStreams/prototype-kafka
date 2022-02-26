@@ -1,0 +1,80 @@
+version: "3.8"
+
+services:
+  #------------------------------#
+  #--------| Zookeepers |--------# 
+  #------------------------------#
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    environment:
+      #TODO: Manage authentication
+      ALLOW_ANONYMOUS_LOGIN: yes
+      ZOO_TICK_TIME: 2000
+      ZOO_PORT_NUMBER: 2181
+    ports:
+      - 22181:2181
+
+  #-------------------------------#
+  #-------| Kafka brokers |-------# 
+  #-------------------------------#
+  broker-1:
+    image: bitnami/kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+      - 9093:9093
+    environment:
+      #TODO: Manage authentication
+      ALLOW_PLAINTEXT_LISTENER: yes
+      KAFKA_BROKER_ID: 1
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CFG_LISTENERS: CLIENT://:9092,EXTERNAL://:9093
+      KAFKA_CFG_ADVERTISED_LISTENERS: CLIENT://broker-1:9092,EXTERNAL://localhost:9093
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: CLIENT
+
+  broker-2:
+    image: bitnami/kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+      - 29093:29093
+    environment:
+      #TODO: Manage authentication
+      ALLOW_PLAINTEXT_LISTENER: yes
+      KAFKA_BROKER_ID: 2 
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CFG_LISTENERS: CLIENT://:29092,EXTERNAL://:29093
+      KAFKA_CFG_ADVERTISED_LISTENERS: CLIENT://broker-2:29092,EXTERNAL://localhost:29093
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: CLIENT
+      
+
+  init-kafka:
+    image: bitnami/kafka:latest
+    depends_on:
+      - broker-1
+      - broker-2
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server broker-1:9092 --list
+      kafka-topics --bootstrap-server broker-2:29092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server broker-1:9092 --create --if-not-exists --topic Testtopic --replication-factor 2 --partitions 1
+      kafka-topics --bootstrap-server broker-2:29092 --create --if-not-exists --topic Testtopic --replication-factor 2 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server broker-1:9092 --list
+      kafka-topics --bootstrap-server broker-2:29092 --list
+      "
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
