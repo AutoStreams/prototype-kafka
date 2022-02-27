@@ -5,6 +5,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class containing main entry point of the consumer application.
@@ -19,6 +21,7 @@ public class Main {
      * @param args optional arguments
      */
     public static void main(String[] args) {
+        final Logger logger = LoggerFactory.getLogger(Main.class);
         ConsumerMaster consumerMaster;
         Options options = new Options();
         CommandLineParser parser = new DefaultParser();
@@ -30,10 +33,10 @@ public class Main {
                 consumerCount = Integer.parseInt(cmd.getOptionValue('w'));
             }
         } catch (ParseException pe) {
-            System.out.println("Could not parse commandline arguments");
+            logger.error("Could not parse commandline arguments");
             pe.printStackTrace();
         } catch (NumberFormatException ne) {
-            System.out.println("Provided worker argument is not a number");
+            logger.error("Provided worker argument is not a number");
             ne.printStackTrace();
         }
 

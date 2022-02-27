@@ -2,9 +2,9 @@
  * Code adapted from:
  * https://github.com/netty/netty/tree/4.1/example/src/main/java/io/netty/example/securechat
  */
+
 package com.klungerbo.streams.utils.datareceiver;
 
-import com.klungerbo.streams.kafka.KafkaPrototypeProducer;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -21,17 +21,16 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.0
  */
 public class DataReceiverInitializer extends ChannelInitializer<SocketChannel> {
-    private final KafkaPrototypeProducer kafkaPrototypeProducer;
     private final DataReceiver dataReceiver;
+    private final StreamsServer<String> streamsServer;
 
     /**
      * Create a DataReceiverInitializer instance with injected KafkaPrototypeProducer.
-     *
-     * @param kafkaPrototypeProducer the KafkaPrototypeProducer to inject.
      */
-    public DataReceiverInitializer(@NotNull KafkaPrototypeProducer kafkaPrototypeProducer, @NotNull DataReceiver dataReceiver) {
-        this.kafkaPrototypeProducer = kafkaPrototypeProducer;
+    public DataReceiverInitializer(@NotNull StreamsServer<String> streamsServer,
+                                   @NotNull DataReceiver dataReceiver) {
         this.dataReceiver = dataReceiver;
+        this.streamsServer = streamsServer;
     }
 
     /**
@@ -46,6 +45,6 @@ public class DataReceiverInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
         pipeline.addLast(new StringDecoder());
         pipeline.addLast(new StringEncoder());
-        pipeline.addLast(new DataReceiverHandler(this.dataReceiver, kafkaPrototypeProducer));
+        pipeline.addLast(new DataReceiverHandler(streamsServer, this.dataReceiver));
     }
 }

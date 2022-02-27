@@ -15,13 +15,13 @@ public class Main {
      * @param args the commandline arguments.
      */
     public static void main(String[] args) {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 1; i++) {
             new Thread(() -> {
                 DataProducer dataProducer = new DataProducer();
                 try {
                     dataProducer.initialize();
                     dataProducer.run();
-                } catch (InterruptedException | IOException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }).start();

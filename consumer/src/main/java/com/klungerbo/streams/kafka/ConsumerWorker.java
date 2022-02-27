@@ -1,6 +1,7 @@
 /**
  * Code adapted from:
  * https://www.javatpoint.com/creating-kafka-consumer-in-java
+ * https://www.oreilly.com/library/view/kafka-the-definitive/9781491936153/ch04.html
  */
 
 package com.klungerbo.streams.kafka;
@@ -10,9 +11,12 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
+import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class representing a worker polling data from a Kafka stream.
@@ -24,6 +28,8 @@ public class ConsumerWorker implements Runnable {
     private final List<String> topics = List.of("Testtopic");
     private KafkaConsumer<String, String> consumer = null;
     private boolean running = true;
+
+    private final Logger logger = LoggerFactory.getLogger(ConsumerWorker.class);
 
     /**
      * Initializes the consumer, and subscribes it to its topics.
@@ -46,12 +52,12 @@ public class ConsumerWorker implements Runnable {
     }
 
     /**
-     * Stops the consumer.
+     * Gracefully stops the consumer.
      */
     public void stop() {
-        this.consumer.unsubscribe();
         this.running = false;
-        System.out.println("Shutting down consumer");
+        this.consumer.close();
+        logger.info("Shutting down consumer");
     }
 
     /**
@@ -65,10 +71,7 @@ public class ConsumerWorker implements Runnable {
         );
 
         props.put("bootstrap.servers", host);
-        System.out.println(props.getProperty("bootstrap.servers"));
-        System.out.println();
-        System.out.println();
-        consumer = new KafkaConsumer<String, String>(props);
+        consumer = new KafkaConsumer<>(props);
     }
 
     /**
@@ -78,11 +81,20 @@ public class ConsumerWorker implements Runnable {
     public void run() {
         while (this.running) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-            for (ConsumerRecord<String, String> record : records) {
-                System.out.println("Key: " + record.key() + ", Value: " + record.value());
-                System.out.println("Partition: " + record.partition() + ", Offset: " + record.offset());
+            for (ConsumerRecord<String, String> consumerRecord : records) {
+                logger.info("Key: {}, Value: {}", consumerRecord.key(), consumerRecord.value());
+                logger.info("Partition: {}, Offset: {}",
+                    consumerRecord.partition(),
+                    consumerRecord.offset()
+                );
+            }
+
+            try {
+                consumer.commitAsync();
+            } catch (CommitFailedException e) {
+                logger.error("Consumer failed to commit");
             }
         }
-        System.out.println("Consumer shut down");
+        logger.info("Consumer shut down");
     }
 }

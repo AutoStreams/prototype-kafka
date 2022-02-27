@@ -2,19 +2,20 @@
  * Code adapted from:
  * https://github.com/netty/netty/tree/4.1/example/src/main/java/io/netty/example/securechat
  */
+
 package com.klungerbo.streams.utils.datareceiver;
 
-import com.klungerbo.streams.kafka.KafkaPrototypeProducer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import org.jetbrains.annotations.NotNull;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler for Data receiver which manages client connection/disconnection
@@ -24,18 +25,23 @@ import java.net.UnknownHostException;
  * @since 1.0
  */
 public class DataReceiverHandler extends SimpleChannelInboundHandler<String> {
-    static final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private static final String DISCONNECT_COMMAND = "streams_command_disconnect";
+    private static final String SHUTDOWN_COMMAND = "streams_command_shutdown";
+
+    private static final ChannelGroup channels =
+        new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private final DataReceiver dataReceiver;
-    private final KafkaPrototypeProducer kafkaPrototypeProducer;
+    private final StreamsServer<String> streamsServer;
+    private final Logger logger = LoggerFactory.getLogger(DataReceiverHandler.class);
 
     /**
      * Create a DataReceiverHandler instance with injected KafkaPrototypeProducer.
      */
     public DataReceiverHandler(
-            @NotNull DataReceiver dataReceiver,
-            @NotNull KafkaPrototypeProducer kafkaPrototypeProducer) {
+        @NotNull StreamsServer<String> streamsServer,
+        @NotNull DataReceiver dataReceiver) {
+        this.streamsServer = streamsServer;
         this.dataReceiver = dataReceiver;
-        this.kafkaPrototypeProducer = kafkaPrototypeProducer;
     }
 
     /**
@@ -46,15 +52,14 @@ public class DataReceiverHandler extends SimpleChannelInboundHandler<String> {
      */
     @Override
     public void handlerAdded(@NotNull ChannelHandlerContext context) throws UnknownHostException {
-        System.out.println("[handlerAdded]: " + context.channel().id());
+        logger.debug("Adding channel: {}", context.channel().id());
         context.writeAndFlush("Connected to: " + InetAddress.getLocalHost().getHostName() + "\n");
         channels.add(context.channel());
 
-        System.out.println("Channels: ");
+        logger.debug("Channels:");
         for (Channel channel : channels) {
-            System.out.println(channel.id());
+            logger.debug("{}", channel.id());
         }
-        System.out.println();
     }
 
     /**
@@ -64,14 +69,13 @@ public class DataReceiverHandler extends SimpleChannelInboundHandler<String> {
      */
     @Override
     public void handlerRemoved(@NotNull ChannelHandlerContext context) {
-        System.out.println("[handlerRemoved]: " + context.channel().id());
+        logger.debug("Removing channel: {}", context.channel().id());
         channels.remove(context.channel());
 
-        System.out.println("Channels: ");
+        logger.debug("Remaining channels:");
         for (Channel channel : channels) {
-            System.out.println(channel.id());
+            logger.debug("{}", channel.id());
         }
-        System.out.println();
     }
 
     /**
@@ -82,25 +86,54 @@ public class DataReceiverHandler extends SimpleChannelInboundHandler<String> {
      */
     @Override
     protected void channelRead0(@NotNull ChannelHandlerContext context, @NotNull String message) {
-        System.out.println("[channelRead0] Received message: " + message + "\n\n");
+        logger.info("Received message: {}", message);
 
-        if ("disconnect".equalsIgnoreCase(message)) {
-            System.out.println("[channelRead0] Received disconnect from: " + context.channel().id());
-            context.writeAndFlush("Disconnecting...\n");
-            context.close();
-        } else if ("shutdown".equalsIgnoreCase(message)) {
-            for (Channel channel : channels) {
-                try {
-                    channel.writeAndFlush("server-shutdown\n").sync();
-                    channel.close().sync();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            this.dataReceiver.shutdown();
+        if (DISCONNECT_COMMAND.equalsIgnoreCase(message)) {
+            closeChannel(context.channel());
+        } else if (SHUTDOWN_COMMAND.equalsIgnoreCase(message)) {
+            this.shutdown();
         } else {
-            kafkaPrototypeProducer.sendRecord(message);
+            streamsServer.onMessage(message);
         }
+    }
+
+    /**
+     * Close a channel connected to the server.
+     *
+     * @param channel the channel to close.
+     */
+    private void closeChannel(@NotNull Channel channel) {
+        logger.info("Closing channel: {}", channel.id());
+
+        channel.parent().writeAndFlush("Disconnected\n");
+        channel.parent().close();
+    }
+
+    /**
+     * Close all channels connected to the server.
+     */
+    private void closeChannels() {
+        for (Channel channel : channels) {
+            try {
+                channel.writeAndFlush(SHUTDOWN_COMMAND + "\n");
+                channel.close().sync();
+            } catch (InterruptedException e) {
+                logger.error("Thread interrupted");
+                e.printStackTrace();
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+
+    /**
+     * Shutdown the server.
+     */
+    private void shutdown() {
+        logger.info("Shutting down");
+
+        this.closeChannels();
+        this.dataReceiver.shutdown();
+        streamsServer.onShutdown();
     }
 
     /**
