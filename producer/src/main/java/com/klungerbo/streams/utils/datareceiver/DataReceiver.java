@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class DataReceiver {
     private static final int PORT = Integer.parseInt(System.getProperty("port", "8992"));
     private final Logger logger = LoggerFactory.getLogger(DataReceiver.class);
-    StreamsServer<String> streamsServer;
+    private final StreamsServer<String> streamsServer;
     private ChannelFuture channelFuture;
     private EventLoopGroup masterGroup;
     private EventLoopGroup workerGroup;

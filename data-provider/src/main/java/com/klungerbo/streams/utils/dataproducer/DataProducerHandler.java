@@ -19,10 +19,12 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  */
 public class DataProducerHandler extends SimpleChannelInboundHandler<String> {
+    private static final String SHUTDOWN_COMMAND = "streams_command_shutdown";
+
     private final Logger logger = LoggerFactory.getLogger(DataProducerHandler.class);
     DataProducer dataProducer;
 
-    DataProducerHandler(DataProducer dataProducer) {
+    DataProducerHandler(@NotNull DataProducer dataProducer) {
         this.dataProducer = dataProducer;
     }
 
@@ -36,7 +38,7 @@ public class DataProducerHandler extends SimpleChannelInboundHandler<String> {
     public void channelRead0(@Nullable ChannelHandlerContext context, @NotNull String message) {
         logger.info("Received message: {}", message);
 
-        if ("server-shutdown".equalsIgnoreCase(message)) {
+        if (SHUTDOWN_COMMAND.equalsIgnoreCase(message)) {
             this.dataProducer.shutdown();
         }
     }
