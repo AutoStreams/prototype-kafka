@@ -1,4 +1,7 @@
 [submodule "streams-data-provider"]
-	path = streams-data-provider
-	url = git@github.com:Klungerbo/streams-data-provider.git
-    branch = master
+path = streams-data-provider
+url = git@github.com:AutoStreams/streams-data-provider.git
+
+[submodule "streams-checks"]
+path = streams-checks
+url = git@github.com:AutoStreams/streams-checks.git

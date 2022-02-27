@@ -12,18 +12,25 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.0
  */
 public final class FileUtils {
-  /**
-   * Loads configs from the specified config file into a properties object.
-   *
-   * @param configName name of the file toa load from
-   * @return Properties object containing the loaded properties (if any)
-   */
-  public static Properties loadConfigFromFile(@NotNull String configName) throws IOException {
-    Properties props = new Properties();
+    /**
+     * Private constructor for file utils to prevent instantiation of the class.
+     */
+    private FileUtils() {
 
-    InputStream is = ClassLoader.getSystemResourceAsStream(configName);
-    props.load(is);
+    }
 
-    return props;
-  }
+    /**
+     * Loads configs from the specified config file into a properties object.
+     *
+     * @param configName name of the file toa load from
+     * @return Properties object containing the loaded properties (if any)
+     */
+    public static Properties loadConfigFromFile(@NotNull String configName) throws IOException {
+        Properties props = new Properties();
+
+        InputStream is = ClassLoader.getSystemResourceAsStream(configName);
+        props.load(is);
+
+        return props;
+    }
 }
