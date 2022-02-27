@@ -2,16 +2,17 @@
  * Code adapted from:
  * https://github.com/netty/netty/tree/4.1/example/src/main/java/io/netty/example/securechat
  */
+
 package com.klungerbo.streams.utils.datareceiver;
 
 import com.klungerbo.streams.kafka.KafkaPrototypeProducer;
-
-import org.jetbrains.annotations.NotNull;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler for Data receiver which manages client connection/disconnection
@@ -22,6 +23,7 @@ import java.net.UnknownHostException;
  */
 public class DataReceiverHandler extends SimpleChannelInboundHandler<String> {
     private final KafkaPrototypeProducer kafkaPrototypeProducer;
+    private final Logger logger = LoggerFactory.getLogger(DataReceiverHandler.class);
 
     /**
      * Create a DataReceiverHandler instance with injected KafkaPrototypeProducer.
@@ -61,7 +63,7 @@ public class DataReceiverHandler extends SimpleChannelInboundHandler<String> {
      */
     @Override
     protected void channelRead0(@NotNull ChannelHandlerContext context, @NotNull String message) {
-        System.out.println("Received message: " + message + "\n\n");
+        logger.info("Received message: {}", message);
         if ("disconnect".equalsIgnoreCase(message)) {
             context.close();
         } else {

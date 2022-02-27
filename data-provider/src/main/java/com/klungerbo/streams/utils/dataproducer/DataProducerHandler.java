@@ -2,12 +2,15 @@
  * Code adapted from:
  * https://github.com/netty/netty/tree/4.1/example/src/main/java/io/netty/example/securechat
  */
+
 package com.klungerbo.streams.utils.dataproducer;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler for data producer which manages incoming messages from a server.
@@ -16,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
  * @since 1.0
  */
 public class DataProducerHandler extends SimpleChannelInboundHandler<String> {
+    private final Logger logger = LoggerFactory.getLogger(DataProducerHandler.class);
+
     /**
      * Read message received from a server.
      *
@@ -24,7 +29,7 @@ public class DataProducerHandler extends SimpleChannelInboundHandler<String> {
      */
     @Override
     public void channelRead0(@Nullable ChannelHandlerContext context, @NotNull String message) {
-        System.err.println(message);
+        logger.info(message);
     }
 
     /**

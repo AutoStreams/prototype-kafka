@@ -2,6 +2,7 @@
  * Code adapted from:
  * https://www.tutorialspoint.com/apache_kafka/apache_kafka_simple_producer_example.htm
  */
+
 package com.klungerbo.streams.kafka;
 
 import java.io.FileNotFoundException;
@@ -9,11 +10,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Properties;
-
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A prototype of a Kafka producer.
@@ -24,6 +26,9 @@ import org.jetbrains.annotations.NotNull;
 public class KafkaPrototypeProducer {
     private static final String CONFIG_PROPERTIES = "config.properties";
     private static final String TOPIC_NAME = "Testtopic";
+
+    private final Logger logger = LoggerFactory.getLogger(KafkaPrototypeProducer.class);
+
     Producer<String, String> kafkaProducer;
 
     /**
@@ -62,12 +67,10 @@ public class KafkaPrototypeProducer {
 
         props.put("bootstrap.servers", host);
         props.put("client.id", InetAddress.getLocalHost().getHostName());
-        System.out.println(props.getProperty("bootstrap.servers"));
-        System.out.println();
-        System.out.println();
-        System.out.println(props.getProperty("client.id"));
-        System.out.println();
-        System.out.println();
+
+        logger.info(props.getProperty("bootstrap.servers"));
+        logger.info(props.getProperty("client.id"));
+
         this.kafkaProducer = new KafkaProducer<>(props);
     }
 

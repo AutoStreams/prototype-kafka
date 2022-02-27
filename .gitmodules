@@ -1,0 +1,4 @@
+[submodule "streams-checks"]
+	path = streams-checks
+	url = git@github.com:AutoStreams/streams-checks.git
+    branch = master
