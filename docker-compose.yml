@@ -26,5 +26,7 @@ services:
     build: ./consumer
     environment:
       KAFKA_URL: 'broker-1:9092,broker-2:29092'
+      port: 8993
     depends_on:
       - init-kafka
+    
