@@ -11,11 +11,12 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
-
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class representing a worker polling data from a Kafka stream.
@@ -81,14 +82,17 @@ public class ConsumerWorker implements Runnable {
         while (this.running) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
             for (ConsumerRecord<String, String> consumerRecord : records) {
-                logger.info("Key: " + consumerRecord.key() + ", Value: " + consumerRecord.value());
-                logger.info("Partition: " + consumerRecord.partition() + ", Offset: " + consumerRecord.offset());
+                logger.info("Key: {}, Value: {}", consumerRecord.key(), consumerRecord.value());
+                logger.info("Partition: {}, Offset: {}",
+                    consumerRecord.partition(),
+                    consumerRecord.offset()
+                );
             }
 
             try {
                 consumer.commitAsync();
             } catch (CommitFailedException e) {
-               logger.info("Consumer failed to commit");
+               logger.error("Consumer failed to commit");
             }
         }
         logger.info("Consumer shut down");
