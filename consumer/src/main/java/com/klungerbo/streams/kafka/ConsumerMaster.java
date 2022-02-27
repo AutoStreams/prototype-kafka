@@ -68,10 +68,7 @@ public class ConsumerMaster implements StreamsServer<String> {
      */
     @Override
     public void onMessage(String s) {
-        if ("shutdown".equals(s)) {
-            logger.info("Shutdown command received");
-            onShutdown();
-        }
+        logger.info(s);
     }
 
     /**
