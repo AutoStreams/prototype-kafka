@@ -92,7 +92,7 @@ public class ConsumerWorker implements Runnable {
             try {
                 consumer.commitAsync();
             } catch (CommitFailedException e) {
-               logger.error("Consumer failed to commit");
+                logger.error("Consumer failed to commit");
             }
         }
         logger.info("Consumer shut down");
