@@ -1,9 +1,12 @@
 package com.klungerbo.streams.kafka;
 
 import com.klungerbo.streams.kafka.utils.FileUtils;
+import com.klungerbo.streams.utils.datareceiver.StreamsServer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class representing a Consumer Master, responsible for creating and controlling Consumer Workers.
@@ -11,9 +14,10 @@ import java.util.Properties;
  * @version 1.0
  * @since 1.0
  */
-public class ConsumerMaster {
+public class ConsumerMaster implements StreamsServer<String> {
     private static final String CONFIG_NAME = "masterconfig.properties";
     private final ArrayList<ConsumerWorker> workers = new ArrayList<>();
+    private final Logger logger = LoggerFactory.getLogger(ConsumerMaster.class);
 
     /**
      * Initializes the Consumer Master, starts generation of workers.
@@ -43,6 +47,8 @@ public class ConsumerMaster {
             ConsumerWorker cw = new ConsumerWorker();
             workers.add(cw);
         }
+
+
     }
 
     /**
@@ -56,9 +62,23 @@ public class ConsumerMaster {
     }
 
     /**
-     * Stops the workers of the master.
+     * Method handling received messages.
+     *
+     * @param s message received
      */
-    public void stopWorkers() {
+    @Override
+    public void onMessage(String s) {
+        if ("shutdown".equals(s)) {
+            logger.info("Shutdown command received");
+            onShutdown();
+        }
+    }
+
+    /**
+     * Shuts down all workers associated with this master.
+     */
+    @Override
+    public void onShutdown() {
         for (ConsumerWorker worker : workers) {
             worker.stop();
         }
