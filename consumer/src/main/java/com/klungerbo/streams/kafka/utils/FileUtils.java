@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class FileUtils {
     /**
-     * Private constructor for file utils to prevent instantiation of the class
+     * Private constructor for file utils to prevent instantiation of the class.
      */
     private FileUtils() {
 

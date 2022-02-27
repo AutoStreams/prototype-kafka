@@ -21,7 +21,7 @@ public class Main {
      * @param args optional arguments
      */
     public static void main(String[] args) {
-        Logger logger = LoggerFactory.getLogger(Main.class);
+        final Logger logger = LoggerFactory.getLogger(Main.class);
         ConsumerMaster consumerMaster;
         Options options = new Options();
         CommandLineParser parser = new DefaultParser();
