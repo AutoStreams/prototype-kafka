@@ -2,6 +2,7 @@
  * Code adapted from:
  * https://github.com/netty/netty/tree/4.1/example/src/main/java/io/netty/example/securechat
  */
+
 package com.klungerbo.streams.utils.dataproducer;
 
 import io.netty.channel.ChannelInitializer;

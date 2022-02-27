@@ -3,6 +3,7 @@
  * Code adapted from:
  * https://github.com/netty/netty/tree/4.1/example/src/main/java/io/netty/example/securechat
  */
+
 package com.klungerbo.streams.utils.dataproducer;
 
 import com.thedeanda.lorem.Lorem;
@@ -17,8 +18,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Data producer (client) that connects to a producer (server) in order to send messages.
@@ -27,10 +29,10 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0
  */
 public final class DataProducer {
+    private static final String CONFIG_PROPERTIES = "config.properties";
+    private final Logger logger = LoggerFactory.getLogger(DataProducer.class);
     private final EventLoopGroup group = new NioEventLoopGroup();
     private final Bootstrap bootstrap = new Bootstrap();
-    private static final String CONFIG_PROPERTIES = "config.properties";
-
     private final Lorem lorem = LoremIpsum.getInstance();
 
     private Channel channel;
@@ -43,7 +45,7 @@ public final class DataProducer {
         this.running = false;
         this.group.shutdownGracefully();
 
-        System.out.println("Client Shutdown");
+        logger.info("Client Shutdown");
     }
 
     /**
@@ -61,13 +63,12 @@ public final class DataProducer {
         int port = Integer.parseInt(System.getenv().getOrDefault("PRODUCER_PORT",
             props.getProperty("producer.port", "8992"))
         );
-        System.out.println(host + port);
-        System.out.println();
-        System.out.println();
-        System.out.println();
+
+        logger.info("{}:{}", host, port);
+
         bootstrap.group(group)
-                .channel(NioSocketChannel.class)
-                .handler(new DataProducerInitializer());
+            .channel(NioSocketChannel.class)
+            .handler(new DataProducerInitializer());
         this.channel = bootstrap.connect(host, port).sync().channel();
     }
 
@@ -85,7 +86,7 @@ public final class DataProducer {
     /**
      * Execute the DataProducer.
      */
-    public void run(){
+    public void run() throws InterruptedException {
         ChannelFuture lastWriteFuture = null;
 
         while (this.running) {
@@ -93,9 +94,12 @@ public final class DataProducer {
                 TimeUnit.MILLISECONDS.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                throw e;
             }
+
             String line = getRandomString(7, 12);
-            System.out.println("String created: " + line);
+            logger.info("String created: {}", line);
+
             lastWriteFuture = channel.writeAndFlush(line + "\r\n");
 
             if ("disconnect".equalsIgnoreCase(line)) {
@@ -104,6 +108,7 @@ public final class DataProducer {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     this.shutdown();
+                    throw e;
                 }
             }
         }
@@ -114,6 +119,7 @@ public final class DataProducer {
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 this.shutdown();
+                throw e;
             }
         }
 
