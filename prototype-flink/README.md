@@ -1,1 +1,0 @@
-# Flink stack with Pulsar or Kafka
