@@ -2,8 +2,12 @@
     path = streams-data-provider
     url = git@github.com:AutoStreams/streams-data-provider.git
     branch = master
+	master = master
+	update = merge
 
 [submodule "streams-checks"]
     path = streams-checks
     url = git@github.com:AutoStreams/streams-checks.git
     branch = master
+	master = master
+	upadate = merge
