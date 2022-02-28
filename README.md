@@ -11,7 +11,7 @@ The next step is to change the working directory to be the root of the cloned di
 cd streams-prototype-kafka
 git submodule update --init --recursive
 ```
-After the repository has been clones, change the working directory to the project root by executing the command: 
+After the repository has been cloned, change the working directory to the project root by executing the command: 
 ```
 cd streams-prototype-kafka
 ```
