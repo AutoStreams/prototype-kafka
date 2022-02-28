@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy JavaDoc 🚀
-        working-directory: javadoc
         uses: MathieuSoysal/Javadoc-publisher.yml@v2.0.3
+          working-directory: javadoc
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           javadoc-branch: gh-pages
