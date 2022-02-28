@@ -1,5 +1,6 @@
 package com.klungerbo.streams.kafka;
 
+import com.klungerbo.streams.utils.datareceiver.DataReceiver;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -43,6 +44,12 @@ public class Main {
         consumerMaster = new ConsumerMaster();
         consumerMaster.init(consumerCount);
         consumerMaster.startWorkers();
+
+
+        new Thread(() -> {
+            DataReceiver dataReceiver = new DataReceiver(consumerMaster);
+            dataReceiver.run();
+        }).start();
     }
 }
 
