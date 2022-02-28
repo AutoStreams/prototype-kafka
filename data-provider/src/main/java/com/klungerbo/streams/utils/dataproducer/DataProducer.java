@@ -9,7 +9,6 @@ package com.klungerbo.streams.utils.dataproducer;
 import com.thedeanda.lorem.Lorem;
 import com.thedeanda.lorem.LoremIpsum;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -31,29 +30,37 @@ import org.slf4j.LoggerFactory;
 public final class DataProducer {
     private static final String CONFIG_PROPERTIES = "config.properties";
     private final Logger logger = LoggerFactory.getLogger(DataProducer.class);
-    private final EventLoopGroup group = new NioEventLoopGroup();
     private final Bootstrap bootstrap = new Bootstrap();
     private final Lorem lorem = LoremIpsum.getInstance();
-
-    private Channel channel;
+    private EventLoopGroup group = new NioEventLoopGroup();
     private boolean running = true;
+    private ChannelFuture channelFuture = null;
 
     /**
-     * Shutdown the DataProducer.
+     * Load Kafka producer properties from configuration file.
+     *
+     * @return the properties loaded from the configuration file.
+     * @throws IOException if there was a problem loading or processing the configuration file.
      */
-    public void shutdown() {
-        this.running = false;
-        this.group.shutdownGracefully();
+    private static Properties loadPropsFromConfig() throws IOException {
+        Properties props = new Properties();
+        InputStream inputStream;
 
-        logger.info("Client Shutdown");
+        inputStream = DataProducer.class.getClassLoader().getResourceAsStream(CONFIG_PROPERTIES);
+
+        if (inputStream != null) {
+            props.load(inputStream);
+        } else {
+            throw new FileNotFoundException("Could not open " + CONFIG_PROPERTIES);
+        }
+
+        return props;
     }
 
     /**
      * Initialize the DataProducer.
-     *
-     * @throws InterruptedException if the thread is interrupted.
      */
-    public void initialize() throws InterruptedException, IOException {
+    public void initialize() throws IOException {
         Properties props = loadPropsFromConfig();
 
         String host = System.getenv().getOrDefault("PRODUCER_URL",
@@ -64,86 +71,69 @@ public final class DataProducer {
             props.getProperty("producer.port", "8992"))
         );
 
-        logger.info("{}:{}", host, port);
+        logger.info("Connecting to: {}:{}", host, port);
 
         bootstrap.group(group)
             .channel(NioSocketChannel.class)
-            .handler(new DataProducerInitializer());
-        this.channel = bootstrap.connect(host, port).sync().channel();
+            .handler(new DataProducerInitializer(this));
+
+        try {
+            this.channelFuture = bootstrap.connect(host, port).sync();
+        } catch (InterruptedException e) {
+            logger.error("Thread interrupted");
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
      * Generate a random lorem ipsum string.
      *
-     * @param min the minimum amount of words in the random string.
-     * @param max the maximum amount of words in the random string.
      * @return a random lorem ipsum string of min <= n <= max amount of n words.
      */
-    private String getRandomString(int min, int max) {
-        return lorem.getWords(min, max);
+    private String getRandomString() {
+        return lorem.getWords(7, 12);
     }
 
     /**
      * Execute the DataProducer.
      */
-    public void run() throws InterruptedException {
-        ChannelFuture lastWriteFuture = null;
-
+    public void run() {
         while (this.running) {
             try {
-                TimeUnit.MILLISECONDS.sleep(500);
+                TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException e) {
+                logger.error("Thread interrupted");
                 e.printStackTrace();
-                throw e;
+                Thread.currentThread().interrupt();
             }
 
-            String line = getRandomString(7, 12);
+            String line = getRandomString();
             logger.info("String created: {}", line);
 
-            lastWriteFuture = channel.writeAndFlush(line + "\r\n");
-
-            if ("disconnect".equalsIgnoreCase(line)) {
-                try {
-                    channel.closeFuture().sync();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    this.shutdown();
-                    throw e;
-                }
+            if (this.channelFuture != null) {
+                this.channelFuture = this.channelFuture.channel().writeAndFlush(line + "\r\n");
             }
         }
-
-        if (lastWriteFuture != null) {
-            try {
-                lastWriteFuture.sync();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                this.shutdown();
-                throw e;
-            }
-        }
-
-        this.group.shutdownGracefully();
     }
 
     /**
-     * Load Kafka producer properties from configuration file.
-     *
-     * @return the properties loaded from the configuration file.
-     * @throws IOException if there was a problem loading or processing the configuration file.
+     * Shutdown the DataProducer.
      */
-    private Properties loadPropsFromConfig() throws IOException {
-        Properties props = new Properties();
-        InputStream inputStream;
+    public void shutdown() {
+        this.running = false;
+        logger.info("Shutting down");
 
-        inputStream = getClass().getClassLoader().getResourceAsStream(CONFIG_PROPERTIES);
-
-        if (inputStream != null) {
-            props.load(inputStream);
-        } else {
-            throw new FileNotFoundException("Could not open " + CONFIG_PROPERTIES);
+        if (channelFuture != null) {
+            logger.debug("Closing channel future");
+            channelFuture.channel().close();
+            channelFuture = null;
         }
 
-        return props;
+        if (group != null) {
+            logger.debug("Closing group");
+            group.shutdownGracefully();
+            group = null;
+        }
     }
 }

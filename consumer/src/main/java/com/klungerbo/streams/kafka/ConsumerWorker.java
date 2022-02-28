@@ -66,7 +66,7 @@ public class ConsumerWorker implements Runnable {
     private void createConsumer() throws IOException {
         Properties props = FileUtils.loadConfigFromFile("consumerconfig.properties");
 
-        String host = System.getenv().getOrDefault("KAFKA_URL",
+        String host = System.getenv().getOrDefault("KAFKA_BROKER_URL",
             props.getProperty("kafka.url", "127.0.0.1")
         );
 

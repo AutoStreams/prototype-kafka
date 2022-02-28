@@ -8,6 +8,13 @@
     <artifactId>kafka-producer</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -15,6 +22,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.AutoStreams</groupId>
+            <artifactId>streams-prototype-utils</artifactId>
+            <version>-SNAPSHOT</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
         <dependency>
             <groupId>org.apache.kafka</groupId>

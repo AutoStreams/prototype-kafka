@@ -1,10 +1,8 @@
 package com.klungerbo.streams.kafka;
 
 import com.klungerbo.streams.utils.datareceiver.DataReceiver;
-import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * The class containing the main entry point of the Kafka producer prototype application.
@@ -21,21 +19,18 @@ public final class Main {
     public static void main(final String[] args) {
         final Logger logger = LoggerFactory.getLogger(Main.class);
 
-        try {
-            KafkaPrototypeProducer kafkaPrototypeProducer = new KafkaPrototypeProducer();
-            kafkaPrototypeProducer.initialize();
-
-            DataReceiver dataReceiver = new DataReceiver(kafkaPrototypeProducer);
-
-            dataReceiver.run();
-            kafkaPrototypeProducer.shutdown();
-        } catch (InterruptedException e) {
-            logger.error("[ERROR] Streams producer failed:\n");
-            e.printStackTrace();
-            Thread.currentThread().interrupt();
-        } catch (IOException e) {
-            logger.error("[ERROR] Streams producer failed:\n");
-            e.printStackTrace();
+        KafkaPrototypeProducer kafkaPrototypeProducer = new KafkaPrototypeProducer();
+        if (!kafkaPrototypeProducer.initialize()) {
+            logger.error("Failed to initialize KafkaPrototypeProducer");
+            return;
         }
+
+        logger.debug("Creating DataReceiver for KafkaProducer");
+        DataReceiver dataReceiver = new DataReceiver(kafkaPrototypeProducer);
+        logger.debug("DataReceiver for KafkaProducer has been created");
+
+        logger.debug("DataReceiver running");
+        dataReceiver.run();
+        logger.debug("DataReceiver ran for KafkaProducer, has finished");
     }
 }

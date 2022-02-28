@@ -5,15 +5,16 @@
 
 package com.klungerbo.streams.kafka;
 
+import com.klungerbo.streams.utils.datareceiver.StreamsServer;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,13 +24,11 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  * @since 1.0
  */
-public class KafkaPrototypeProducer {
+public class KafkaPrototypeProducer implements StreamsServer<String> {
     private static final String CONFIG_PROPERTIES = "config.properties";
     private static final String TOPIC_NAME = "Testtopic";
-
     private final Logger logger = LoggerFactory.getLogger(KafkaPrototypeProducer.class);
-
-    Producer<String, String> kafkaProducer;
+    private Producer<String, String> kafkaProducer = null;
 
     /**
      * Load Kafka producer properties from configuration file.
@@ -39,46 +38,49 @@ public class KafkaPrototypeProducer {
      */
     private Properties loadPropsFromConfig() throws IOException {
         Properties props = new Properties();
-        InputStream inputStream;
+        InputStream inputStream = getClass()
+            .getClassLoader()
+            .getResourceAsStream(CONFIG_PROPERTIES);
 
-        inputStream = getClass().getClassLoader().getResourceAsStream(CONFIG_PROPERTIES);
-
-        if (inputStream != null) {
-            props.load(inputStream);
-        } else {
+        if (inputStream == null) {
             throw new FileNotFoundException("Could not open " + CONFIG_PROPERTIES);
         }
+
+        props.load(inputStream);
 
         return props;
     }
 
     /**
      * Initialize the Kafka prototype producer.
-     *
-     * @throws IOException if there was a problem reading the configuration file
-     *                     or if there was a problem in resolving the local hostname.
      */
-    public void initialize() throws IOException {
-        Properties props = loadPropsFromConfig();
+    public boolean initialize() {
+        Properties props;
 
-        String host = System.getenv().getOrDefault("KAFKA_URL",
+        try {
+            props = loadPropsFromConfig();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        final String host = System.getenv().getOrDefault("KAFKA_BROKER_URL",
             props.getProperty("kafka.url", "127.0.0.1")
         );
 
-        props.put("bootstrap.servers", host);
-        props.put("client.id", InetAddress.getLocalHost().getHostName());
+        try {
+            props.put("bootstrap.servers", host);
+            props.put("client.id", InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
 
-        logger.info(props.getProperty("bootstrap.servers"));
-        logger.info(props.getProperty("client.id"));
+        logger.info("bootstrap.servers: {}", props.getProperty("bootstrap.servers"));
+        logger.info("client.id: {}", props.getProperty("client.id"));
 
         this.kafkaProducer = new KafkaProducer<>(props);
-    }
 
-    /**
-     * Shutdown the Kafka prototype producer.
-     */
-    public void shutdown() {
-        this.kafkaProducer.close();
+        return true;
     }
 
     /**
@@ -86,8 +88,20 @@ public class KafkaPrototypeProducer {
      *
      * @param message the message to send to the Kafka broker.
      */
-    public void sendRecord(@NotNull String message) {
+    @Override
+    public void onMessage(String message) {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, message);
         kafkaProducer.send(producerRecord);
+    }
+
+    /**
+     * Shutdown the Kafka prototype producer.
+     */
+    @Override
+    public void onShutdown() {
+        if (this.kafkaProducer != null) {
+            this.kafkaProducer.close();
+            this.kafkaProducer = null;
+        }
     }
 }
