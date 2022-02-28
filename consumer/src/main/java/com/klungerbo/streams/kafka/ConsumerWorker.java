@@ -56,7 +56,9 @@ public class ConsumerWorker implements Runnable {
      */
     public void stop() {
         this.running = false;
-        this.consumer.close();
+        synchronized (this) {
+            this.consumer.close();
+        }
         logger.info("Shutting down consumer");
     }
 
@@ -80,19 +82,21 @@ public class ConsumerWorker implements Runnable {
     @Override
     public void run() {
         while (this.running) {
-            ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-            for (ConsumerRecord<String, String> consumerRecord : records) {
-                logger.info("Key: {}, Value: {}", consumerRecord.key(), consumerRecord.value());
-                logger.info("Partition: {}, Offset: {}",
-                    consumerRecord.partition(),
-                    consumerRecord.offset()
-                );
-            }
+            synchronized (this) {
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+                for (ConsumerRecord<String, String> consumerRecord : records) {
+                    logger.info("Key: {}, Value: {}", consumerRecord.key(), consumerRecord.value());
+                    logger.info("Partition: {}, Offset: {}",
+                        consumerRecord.partition(),
+                        consumerRecord.offset()
+                    );
+                }
 
-            try {
-                consumer.commitAsync();
-            } catch (CommitFailedException e) {
-                logger.error("Consumer failed to commit");
+                try {
+                    consumer.commitAsync();
+                } catch (CommitFailedException e) {
+                    logger.error("Consumer failed to commit");
+                }
             }
         }
         logger.info("Consumer shut down");
