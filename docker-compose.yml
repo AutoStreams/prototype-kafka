@@ -12,7 +12,7 @@ services:
     depends_on:
       - init-kafka
     ports:
-      - 8992:8992
+      - "8992:8992"
 
   data-provider:
     build: ./data-provider

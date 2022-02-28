@@ -8,4 +8,7 @@ RUN mvn -f /home/app/pom.xml clean package
 
 FROM gcr.io/distroless/java17-debian11
 COPY --from=build /home/app/target/data-provider-1.0-SNAPSHOT-jar-with-dependencies.jar /usr/local/lib/data-producer.jar
+EXPOSE 8992
+ENV PRODUCER_URL=producer
+ENV PRODUCER_PORT=8992
 ENTRYPOINT ["java", "-jar", "/usr/local/lib/data-producer.jar"]

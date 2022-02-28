@@ -90,8 +90,8 @@ public class KafkaPrototypeProducer implements StreamsServer<String> {
      */
     @Override
     public void onMessage(String message) {
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, message);
-        kafkaProducer.send(producerRecord);
+        //ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, message);
+        //kafkaProducer.send(producerRecord);
     }
 
     /**
