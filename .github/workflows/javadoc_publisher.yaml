@@ -1,20 +1,19 @@
-name: Javadoc CI
+# https://github.com/MathieuSoysal/Javadoc-publisher.yml
+name: Deploy Javadoc
 
 on:
   push:
-    branches:
-      - master
-      - feature/javadoc
+    branches: [ master, release-*, develop, feature/javadoc]
+  pull_request:
+    branches: [ master, release-*, develop ]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy JavaDoc 🚀
-        uses: ./.github/workflows
+        uses: MathieuSoysal/Javadoc-publisher.yml@v2.0.3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           javadoc-branch: javadoc
           java-version: 17
-
-
