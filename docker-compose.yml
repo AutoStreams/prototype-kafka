@@ -5,15 +5,6 @@ services:
   #-------------------------------#
   #----| Streams Kafka utils |----#
   #-------------------------------#
-  producer:
-    build: ./producer
-    environment:
-      KAFKA_URL: 'broker-1:9092,broker-2:29092'
-    depends_on:
-      - init-kafka
-    ports:
-      - 8992:8992
-
   data-provider:
     build: ./streams-data-provider
     environment:
@@ -22,9 +13,21 @@ services:
     depends_on:
       - producer
 
+  producer:
+    build: ./producer
+    environment:
+      KAFKA_BROKER_URL: 'broker-1:9092,broker-2:29092'
+    depends_on:
+      - init-kafka
+    ports:
+      - "8992:8992"
+
   consumer:
     build: ./consumer
     environment:
-      KAFKA_URL: 'broker-1:9092,broker-2:29092'
+      KAFKA_BROKER_URL: 'broker-1:9092,broker-2:29092'
     depends_on:
       - init-kafka
+    ports:
+      - "8993:8992"
+

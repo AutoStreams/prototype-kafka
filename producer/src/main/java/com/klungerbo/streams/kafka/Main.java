@@ -25,7 +25,12 @@ public final class Main {
             return;
         }
 
+        logger.debug("Creating DataReceiver for KafkaProducer");
         DataReceiver dataReceiver = new DataReceiver(kafkaPrototypeProducer);
+        logger.debug("DataReceiver for KafkaProducer has been created");
+
+        logger.debug("DataReceiver running");
         dataReceiver.run();
+        logger.debug("DataReceiver ran for KafkaProducer, has finished");
     }
 }

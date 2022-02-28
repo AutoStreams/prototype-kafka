@@ -27,7 +27,6 @@
             <artifactId>streams-prototype-utils</artifactId>
             <version>-SNAPSHOT</version>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
         <dependency>
             <groupId>org.apache.kafka</groupId>
