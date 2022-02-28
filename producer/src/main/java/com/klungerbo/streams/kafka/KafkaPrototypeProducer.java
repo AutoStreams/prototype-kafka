@@ -64,7 +64,7 @@ public class KafkaPrototypeProducer implements StreamsServer<String> {
             return false;
         }
 
-        final String host = System.getenv().getOrDefault("KAFKA_URL",
+        final String host = System.getenv().getOrDefault("KAFKA_BROKER_URL",
             props.getProperty("kafka.url", "127.0.0.1")
         );
 
@@ -90,8 +90,8 @@ public class KafkaPrototypeProducer implements StreamsServer<String> {
      */
     @Override
     public void onMessage(String message) {
-        //ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, message);
-        //kafkaProducer.send(producerRecord);
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, message);
+        kafkaProducer.send(producerRecord);
     }
 
     /**
