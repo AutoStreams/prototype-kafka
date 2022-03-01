@@ -1,13 +1,10 @@
-[submodule "streams-data-provider"]
-    path = streams-data-provider
-    url = git@github.com:AutoStreams/streams-data-provider.git
-    branch = master
-	master = master
-	update = merge
-
-[submodule "streams-checks"]
-    path = streams-checks
-    url = git@github.com:AutoStreams/streams-checks.git
-    branch = master
-	master = master
-	upadate = merge
+[submodule "autostreams-checks"]
+	path = autostreams-checks
+	url = git@github.com:AutoStreams/autostreams-checks.git
+	branch = master
+	update = rebase
+[submodule "prototype-data-provider"]
+	path = prototype-data-provider
+	url = git@github.com:AutoStreams/prototype-data-provider.git
+	branch = master
+	update = rebase
