@@ -14,6 +14,5 @@ jobs:
         uses: AutoStreams/javadoc-ci-gen@1.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JAVADOC_DIR: ./javadoc
           javadoc-branch: gh-pages
           java-version: 17
