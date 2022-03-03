@@ -1,4 +1,4 @@
-[![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://klungerbo.github.io/streams-prototype-kafka/javadoc/)
+[![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://autostreams.github.io/prototype-kafka/)
 ## About The Project
 This is a collection that utilizes the data provider, Kafka producer prototype, and the Kafka consumer prototype found in the subdirectories of this project. To build and run a project individually, see the corresponding subdirectory for further details.
 ## Getting Started
