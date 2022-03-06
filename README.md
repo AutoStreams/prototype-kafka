@@ -12,27 +12,19 @@ The next step is to change the working directory to be the root of the cloned di
 cd streams-prototype-kafka
 git submodule update --init --recursive
 ```
-After the repository has been cloned, change the working directory to the project root by executing the command: 
-```
-cd streams-prototype-kafka
-```
-The next step is to aquire the data-provider submodule by executing the command:
-```
-git submodule update --init --recursive
-```
 
 ### Build and run docker-compose 
 **Prerequisites**
 * Make sure you have downloaded [Docker](https://www.docker.com/) on your system.
 * Make sure [Docker Compose](https://docs.docker.com/compose/install/) is installed (Added by default with Docker Desktop for Windows)
-* Set the working directory to the root of this collection directory i.e. **`/streams-prototype-kafka/`**
+* Set the working directory to the root of this collection directory i.e. **`/prototype-kafka/`**
 
 To build the docker images, execute the command:
 ```bash
 docker-compose -f ./docker-compose.yml -f ./broker/docker-compose.yml build
 ```
 
-To execute the built images, execute the command:
+To start the built images, execute the command:
 ```bash
 docker-compose -f ./docker-compose.yml -f ./broker/docker-compose.yml up
 ```
