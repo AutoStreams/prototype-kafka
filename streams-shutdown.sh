@@ -4,7 +4,7 @@
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 
 IP=localhost
-PORT=8992
+PORT=""
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -31,6 +31,12 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+if [ -z "$PORT" ]
+then
+    echo -e "Missing port. \nUse the -p option to specify a port or -h for more help"
+    exit 1
+fi
 
 nc -zv $IP $PORT
 echo -e "streams_command_shutdown" | nc $IP $PORT
