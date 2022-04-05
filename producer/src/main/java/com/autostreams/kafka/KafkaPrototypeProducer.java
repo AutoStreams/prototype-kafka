@@ -3,9 +3,9 @@
  * https://www.tutorialspoint.com/apache_kafka/apache_kafka_simple_producer_example.htm
  */
 
-package com.klungerbo.streams.kafka;
+package com.autostreams.kafka;
 
-import com.klungerbo.streams.utils.datareceiver.StreamsServer;
+import com.autostreams.utils.datareceiver.StreamsServer;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;

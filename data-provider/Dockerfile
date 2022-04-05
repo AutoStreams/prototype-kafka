@@ -7,7 +7,5 @@ COPY pom.xml /home/app
 RUN mvn -f /home/app/pom.xml clean package
 
 FROM gcr.io/distroless/java17-debian11
-COPY --from=build /home/app/target/kafka-consumer-0.1.0-SNAPSHOT-jar-with-dependencies.jar /usr/local/lib/data-consumer.jar
-ENV KAFKA_BROKER_URL='broker-1:9092,broker-2:29092'
-EXPOSE 8992
-ENTRYPOINT ["java", "-jar", "/usr/local/lib/data-consumer.jar"]
+COPY --from=build /home/app/target/kafka-data-provider-0.1.0-SNAPSHOT-jar-with-dependencies.jar /usr/local/lib/kafka-data-provider.jar
+ENTRYPOINT ["java", "-jar", "/usr/local/lib/kafka-data-provider.jar"]

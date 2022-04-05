@@ -1,6 +1,6 @@
-package com.klungerbo.streams.kafka;
+package com.autostreams.kafka;
 
-import com.klungerbo.streams.utils.datareceiver.DataReceiver;
+import com.autostreams.utils.datareceiver.DataReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -6,7 +6,7 @@ services:
   #----| Streams Kafka utils |----#
   #-------------------------------#
   data-provider:
-    build: ./prototype-data-provider
+    build: ./data-provider
     environment:
       PRODUCER_URL: producer
       PRODUCER_PORT: 8992

@@ -1,8 +1,7 @@
-package com.klungerbo.streams.kafka;
+package com.autostreams.kafka;
 
-import com.klungerbo.streams.kafka.utils.FileUtils;
-import com.klungerbo.streams.utils.datareceiver.StreamsServer;
-import java.io.IOException;
+import com.autostreams.utils.datareceiver.StreamsServer;
+import com.autostreams.utils.fileutils.FileUtils;
 import java.util.ArrayList;
 import java.util.Properties;
 import org.slf4j.Logger;
@@ -35,20 +34,14 @@ public class ConsumerMaster implements StreamsServer<String> {
      */
     private void generateWorkers(int consumerCount) {
         if (consumerCount == 0) {
-            try {
-                Properties props = FileUtils.loadConfigFromFile(CONFIG_NAME);
-                consumerCount = Integer.parseInt(props.getProperty("consumers.count"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Properties props = FileUtils.loadPropertiesFromFile(CONFIG_NAME);
+            consumerCount = Integer.parseInt(props.getProperty("consumers.count"));
         }
 
         for (int i = 0; i < consumerCount; i++) {
             ConsumerWorker cw = new ConsumerWorker();
             workers.add(cw);
         }
-
-
     }
 
     /**
