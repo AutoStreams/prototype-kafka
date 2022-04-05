@@ -4,10 +4,9 @@
  * https://www.oreilly.com/library/view/kafka-the-definitive/9781491936153/ch04.html
  */
 
-package com.klungerbo.streams.kafka;
+package com.autostreams.kafka;
 
-import com.klungerbo.streams.kafka.utils.FileUtils;
-import java.io.IOException;
+import com.autostreams.utils.fileutils.FileUtils;
 import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
@@ -35,12 +34,8 @@ public class ConsumerWorker implements Runnable {
      * Initializes the consumer, and subscribes it to its topics.
      */
     public void initialize() {
-        try {
-            createConsumer();
-            consumer.subscribe(topics);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        createConsumer();
+        consumer.subscribe(topics);
     }
 
     /**
@@ -65,8 +60,8 @@ public class ConsumerWorker implements Runnable {
     /**
      * Creates the relevant kafka consumer and subscribes it to specified topics.
      */
-    private void createConsumer() throws IOException {
-        Properties props = FileUtils.loadConfigFromFile("consumerconfig.properties");
+    private void createConsumer() {
+        Properties props = FileUtils.loadPropertiesFromFile("consumerconfig.properties");
 
         String host = System.getenv().getOrDefault("KAFKA_BROKER_URL",
             props.getProperty("kafka.url", "127.0.0.1")
@@ -85,7 +80,10 @@ public class ConsumerWorker implements Runnable {
             synchronized (this) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 for (ConsumerRecord<String, String> consumerRecord : records) {
-                    logger.info("Key: {}, Value: {}", consumerRecord.key(), consumerRecord.value());
+                    String key = consumerRecord.key();
+                    String value = consumerRecord.value();
+
+                    logger.info("Key: {}, Value: {}", key, value);
                     logger.info("Partition: {}, Offset: {}",
                         consumerRecord.partition(),
                         consumerRecord.offset()
