@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.klungerbo.streams.kafka"},{"l":"com.klungerbo.streams.kafka.utils"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.autostreams.dataprovider"},{"l":"com.autostreams.kafka"}];updateSearchResults();
