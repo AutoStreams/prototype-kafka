@@ -83,6 +83,13 @@ public class KafkaPrototypeProducer implements StreamsServer<String> {
         return true;
     }
 
+    private void sendMessage(String message) {
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, message);
+        kafkaProducer.send(producerRecord, (meta, exception) ->
+            logger.info("{} sent to server", message)
+        );
+    }
+
     /**
      * Send a message to a Kafka broker through a record.
      *
@@ -90,8 +97,7 @@ public class KafkaPrototypeProducer implements StreamsServer<String> {
      */
     @Override
     public void onMessage(String message) {
-        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, message);
-        kafkaProducer.send(producerRecord);
+        this.sendMessage(message);
     }
 
     /**
