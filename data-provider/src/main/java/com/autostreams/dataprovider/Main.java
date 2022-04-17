@@ -32,7 +32,7 @@ public class Main {
 
         DataProvider dataProvider = DataProvider.fromHostAndPort(host, port);
         if (dataProvider.initialize()) {
-            dataProvider.setMessagesPerSecond(1);
+            dataProvider.setMessagesPerSecond(10000);
             dataProvider.run();
         }
     }

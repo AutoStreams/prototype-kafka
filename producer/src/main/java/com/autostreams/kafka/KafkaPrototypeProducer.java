@@ -29,6 +29,10 @@ public class KafkaPrototypeProducer implements StreamsServer<String> {
     private static final String TOPIC_NAME = "Testtopic";
     private final Logger logger = LoggerFactory.getLogger(KafkaPrototypeProducer.class);
     private Producer<String, String> kafkaProducer = null;
+    private int messagesSent = 0;
+    private boolean newItr = true;
+    private long start;
+    private final int messagesPerIteration = 100000;
 
     /**
      * Load Kafka producer properties from configuration file.
@@ -83,11 +87,31 @@ public class KafkaPrototypeProducer implements StreamsServer<String> {
         return true;
     }
 
+    private void logElapsedTime() {
+        long finish = System.currentTimeMillis();
+        double elapsedTimeInSeconds = (finish - start) / 1000.0;
+        String elapsedTimeInSecondsFormatted = String.format("%.2f", elapsedTimeInSeconds);
+
+        logger.info("Sent {} messages | {}s | {}msg/s |",
+            messagesPerIteration,
+            elapsedTimeInSecondsFormatted,
+            (int)(messagesPerIteration / elapsedTimeInSeconds)
+        );
+
+        start = System.currentTimeMillis();
+    }
+
     private void sendMessage(String message) {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(TOPIC_NAME, message);
-        kafkaProducer.send(producerRecord, (meta, exception) ->
-            logger.info("{} sent to server", message)
-        );
+        kafkaProducer.send(producerRecord, (meta, exception) -> {
+            ++messagesSent;
+
+            boolean hasSentAnIteration = (messagesSent % messagesPerIteration) == 0;
+            if (hasSentAnIteration && newItr) {
+                this.logElapsedTime();
+                newItr = false;
+            }
+        });
     }
 
     /**
@@ -97,6 +121,12 @@ public class KafkaPrototypeProducer implements StreamsServer<String> {
      */
     @Override
     public void onMessage(String message) {
+        if (messagesSent == 0) {
+            start = System.currentTimeMillis();
+        } else {
+            newItr = true;
+        }
+
         this.sendMessage(message);
     }
 
