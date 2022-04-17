@@ -41,6 +41,7 @@ public class ConsumerMaster implements StreamsServer<String> {
         for (int i = 0; i < consumerCount; i++) {
             ConsumerWorker cw = new ConsumerWorker();
             workers.add(cw);
+            addTimerToWorker(cw);
         }
     }
 
@@ -52,6 +53,10 @@ public class ConsumerMaster implements StreamsServer<String> {
             worker.initialize();
             worker.start();
         }
+    }
+
+    private void addTimerToWorker(ConsumerWorker worker) {
+        new ConsumerTimer(worker, 1000000);
     }
 
     /**

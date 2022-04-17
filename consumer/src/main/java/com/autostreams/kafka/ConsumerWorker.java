@@ -6,14 +6,22 @@
 
 package com.autostreams.kafka;
 
+import com.autostreams.kafka.observer.Observer;
+import com.autostreams.kafka.observer.Subject;
 import com.autostreams.utils.fileutils.FileUtils;
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-import org.apache.kafka.clients.consumer.CommitFailedException;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.clients.consumer.OffsetCommitCallback;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.errors.WakeupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,12 +31,13 @@ import org.slf4j.LoggerFactory;
  * @version 1.0
  * @since 1.0
  */
-public class ConsumerWorker implements Runnable {
+public class ConsumerWorker implements Runnable, Subject {
     private final List<String> topics = List.of("Testtopic");
     private KafkaConsumer<String, String> consumer = null;
     private boolean running = true;
-
+    private final HashSet<Observer> observers = new HashSet<>();
     private final Logger logger = LoggerFactory.getLogger(ConsumerWorker.class);
+
 
     /**
      * Initializes the consumer, and subscribes it to its topics.
@@ -73,30 +82,55 @@ public class ConsumerWorker implements Runnable {
 
     /**
      * Polls the kafka stream for data.
+     * ADAPTED FROM:
+     * https://stackoverflow.com/questions/53240589/kafka-commitasync-retries-with-commit-order
      */
     @Override
     public void run() {
-        while (this.running) {
-            synchronized (this) {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-                for (ConsumerRecord<String, String> consumerRecord : records) {
-                    String key = consumerRecord.key();
-                    String value = consumerRecord.value();
-
-                    logger.info("Key: {}, Value: {}", key, value);
-                    logger.info("Partition: {}, Offset: {}",
-                        consumerRecord.partition(),
-                        consumerRecord.offset()
-                    );
+        try {
+            AtomicInteger atomicInteger = new AtomicInteger(0);
+            while (running) {
+                ConsumerRecords<String, String> messages = consumer.poll(Duration.ofMillis(5));
+                for (ConsumerRecord<String, String> message : messages) {
+                    String messageValue = message.value();
+                    logger.info("Value: {}, Offset: {}", messageValue, message.offset());
+                    this.notifyObservers();
                 }
 
-                try {
-                    consumer.commitAsync();
-                } catch (CommitFailedException e) {
-                    logger.error("Consumer failed to commit");
-                }
+                consumer.commitAsync(new OffsetCommitCallback() {
+                    private final int marker = atomicInteger.incrementAndGet();
+                    @Override
+                    public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets,
+                                           Exception exception) {
+                        if (exception != null && marker == atomicInteger.get()) {
+                            consumer.commitAsync(this);
+                        }
+                    }
+                });
             }
+        } catch (WakeupException e) {
+            // ignore for shutdown
+        } finally {
+            consumer.commitSync();
+            consumer.close();
         }
-        logger.info("Consumer shut down");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void subscribe(Observer subscriber) {
+        observers.add(subscriber);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update();
+        }
     }
 }
