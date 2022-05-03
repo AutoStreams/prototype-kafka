@@ -1,3 +1,6 @@
+[![javadoc-master](https://img.shields.io/badge/Javadoc-master-green?style=plastic)](https://autostreams.github.io/prototype-kafka/javadoc/)
+[![javadoc-develop](https://img.shields.io/badge/Javadoc-develop-green?style=plastic)](https://autostreams.github.io/prototype-kafka/javadoc-develop/)
+
 ## About The Project
 This is a collection that utilizes the data producer, Kafka producer prototype, and the Kafka consumer prototype found in the subdirectories of this directory. To build and run a project individually, see the corresponding subdirectory for further details.
 ## Getting Started
