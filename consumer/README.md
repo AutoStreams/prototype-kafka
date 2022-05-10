@@ -16,13 +16,13 @@ mvn package
 ```
 To run the application, execute the command:
 ```
-java -jar kafka-consumer-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -jar kafka-consumer-1.0.0-jar-with-dependencies.jar
 ```
 This will run the application and create the amount of workers specified in the config file.
 It is also possible to specify a different amount of workers using the command line argument **`-w`**. The following
-command executes the application with 12 workers.
+command executes the application with 6 workers.
 ```
-java -jar kafka-consumer-1.0-SNAPSHOT-jar-with-dependencies.jar -w 12
+java -jar kafka-consumer-1.0.0-jar-with-dependencies.jar -w 6
 ```
 ### Option 2: Build and run with Docker
 **Prerequisites**
