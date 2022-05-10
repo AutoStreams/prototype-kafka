@@ -1,4 +1,5 @@
-[submodule "streams-checks"]
-	path = streams-checks
-	url = git@github.com:AutoStreams/streams-checks.git
-    branch = master
+[submodule "autostreams-checks"]
+	path = autostreams-checks
+	url = git@github.com:AutoStreams/autostreams-checks.git
+	branch = master
+	update = rebase
