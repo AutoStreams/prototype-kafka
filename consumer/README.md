@@ -9,8 +9,9 @@ git clone https://github.com/AutoStreams/prototype-kafka.git
 **Prerequisites**
 * Download the latest version of [Maven](https://maven.apache.org/).
 * Download a Java JDK of version 17
-* Set the working directory to the root of this consumer project i.e. **`prototype-kafka/consumer/`**
-  To build the project with its dependencies to a single jar file, execute the command:
+* Set the working directory to the root of this prototype consumer project i.e. **`prototype-kafka/consumer/`**
+  
+To build the project with its dependencies to a single jar file, execute the command:
 ```
 mvn package
 ```
@@ -27,7 +28,7 @@ java -jar kafka-consumer-1.0.0-jar-with-dependencies.jar -w 6
 ### Option 2: Build and run with Docker
 **Prerequisites**
 * Make sure you have downloaded [Docker](https://www.docker.com/) on your system.
-* Set the working directory to the root of this data producer project i.e. **`prototype-kafka/consumer/`**
+* Set the working directory to the root of this prototype consumer i.e. **`prototype-kafka/consumer/`**
 
 To build the docker image, execute the command:
 ```
