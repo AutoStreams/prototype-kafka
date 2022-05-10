@@ -16,7 +16,7 @@ mvn package
 ```
 To run the application, execute the command:
 ```
-java -jar kafka-producer-0.1.0-jar-with-dependencies.jar 
+java -jar kafka-producer-1.0.0-jar-with-dependencies.jar 
 ```
 ### Option 2: Build and run with Docker
 **Prerequisites**
