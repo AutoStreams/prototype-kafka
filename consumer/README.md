@@ -11,7 +11,7 @@ git clone https://github.com/AutoStreams/prototype-kafka.git
 * Download a Java JDK of version 17
 * Set the working directory to the root of this prototype consumer project i.e. **`prototype-kafka/consumer/`**
   
-  To build the project with its dependencies to a single jar file, execute the command:
+To build the project with its dependencies to a single jar file, execute the command:
 ```
 mvn package
 ```
